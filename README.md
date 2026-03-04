@@ -18,22 +18,22 @@ All diagrams are inline SVG — fully scalable, print-ready, and self-contained 
 
 | # | Title | Figures | Size |
 |---|-------|:-------:|-----:|
-| [01](chapter-01-WITH-FIGURES.html) | Memory Hierarchy and the Translation Problem | 20 | 254 KB |
-| [02](chapter-02-WITH-FIGURES.html) | Virtual Memory Concepts | 7 | 193 KB |
-| [03](chapter-03-WITH-FIGURES.html) | Page Table Structures and Implementation | 12 | 249 KB |
-| [04](chapter-04-WITH-FIGURES.html) | TLB Architecture and Organization | 3 | 246 KB |
-| [05](chapter-05-WITH-FIGURES.html) | IOMMU and Device Address Translation | 5 | 321 KB |
-| [06](chapter-06-WITH-FIGURES.html) | Memory Protection and Access Control | 5 | 296 KB |
-| [07](chapter-07-WITH-FIGURES.html) | Page Faults and Exception Handling | 2 | 675 KB |
-| [08](chapter-08-WITH-FIGURES.html) | Memory Reclaim and Page Replacement | 2 | 524 KB |
-| [09](chapter-09-WITH-FIGURES.html) | Advanced Page Table Optimizations | 1 | 263 KB |
-| [10](chapter-10-WITH-FIGURES.html) | Device Memory and Peripheral Translation | 1 | 291 KB |
-| [11](chapter-11-WITH-FIGURES.html) | AI/ML Accelerator Memory Systems | 4 | 318 KB |
-| [12](chapter-12-WITH-FIGURES.html) | Multi-GPU TLB Coordination at Scale | 1 | 182 KB |
-| [13](chapter-13-WITH-FIGURES.html) | Machine Learning for MMU Optimization | 1 | 63 KB |
-| [14](chapter-14-WITH-FIGURES.html) | Software-Managed Memory for LLM Serving | 1 | 154 KB |
-| [15](chapter-15-WITH-FIGURES.html) | Alternative Translation Architectures | 1 | 91 KB |
-| [16](chapter-16-WITH-FIGURES.html) | Advanced TLB Optimization Techniques | 3 | 119 KB |
+| [01](chapters/chapter-01-WITH-FIGURES.html) | Memory Hierarchy and the Translation Problem | 20 | 254 KB |
+| [02](chapters/chapter-02-WITH-FIGURES.html) | Virtual Memory Concepts | 7 | 193 KB |
+| [03](chapters/chapter-03-WITH-FIGURES.html) | Page Table Structures and Implementation | 12 | 249 KB |
+| [04](chapters/chapter-04-WITH-FIGURES.html) | TLB Architecture and Organization | 3 | 246 KB |
+| [05](chapters/chapter-05-WITH-FIGURES.html) | IOMMU and Device Address Translation | 5 | 321 KB |
+| [06](chapters/chapter-06-WITH-FIGURES.html) | Memory Protection and Access Control | 5 | 296 KB |
+| [07](chapters/chapter-07-WITH-FIGURES.html) | Page Faults and Exception Handling | 2 | 675 KB |
+| [08](chapters/chapter-08-WITH-FIGURES.html) | Memory Reclaim and Page Replacement | 2 | 524 KB |
+| [09](chapters/chapter-09-WITH-FIGURES.html) | Advanced Page Table Optimizations | 1 | 263 KB |
+| [10](chapters/chapter-10-WITH-FIGURES.html) | Device Memory and Peripheral Translation | 1 | 291 KB |
+| [11](chapters/chapter-11-WITH-FIGURES.html) | AI/ML Accelerator Memory Systems | 4 | 318 KB |
+| [12](chapters/chapter-12-WITH-FIGURES.html) | Multi-GPU TLB Coordination at Scale | 1 | 182 KB |
+| [13](chapters/chapter-13-WITH-FIGURES.html) | Machine Learning for MMU Optimization | 1 | 63 KB |
+| [14](chapters/chapter-14-WITH-FIGURES.html) | Software-Managed Memory for LLM Serving | 1 | 154 KB |
+| [15](chapters/chapter-15-WITH-FIGURES.html) | Alternative Translation Architectures | 1 | 91 KB |
+| [16](chapters/chapter-16-WITH-FIGURES.html) | Advanced TLB Optimization Techniques | 3 | 119 KB |
 
 **Total: 69 embedded SVG figures across 16 chapters (~4.2 MB)**
 
