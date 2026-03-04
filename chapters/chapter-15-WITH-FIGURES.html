@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 15: Beyond Traditional MMU - Alternative Translation Architectures</title>
+  <style>
+
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  
+  
+    figure{page-break-inside:avoid;}
+    figure svg{max-width:100%;height:auto;}
+    @media print{figure{page-break-inside:avoid;margin:1.5em 0;}figcaption{font-size:9pt;}}
+  </style>
+  <style>
+
+      body {
+          max-width: 900px;
+          margin: 40px auto;
+          padding: 20px;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          background-color: #f5f5f5;
+      }
+      .container {
+          background: white;
+          padding: 40px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      h1 {
+          color: #2c3e50;
+          border-bottom: 3px solid #3498db;
+          padding-bottom: 10px;
+      }
+      h2 {
+          color: #34495e;
+          border-bottom: 2px solid #e0e0e0;
+          padding-bottom: 8px;
+          margin-top: 40px;
+      }
+      h3 {
+          color: #555;
+          margin-top: 30px;
+      }
+      code {
+          background-color: #f4f4f4;
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-family: 'Courier New', Courier, monospace;
+          font-size: 0.9em;
+      }
+      pre {
+          background-color: #f8f8f8;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          padding: 15px;
+          overflow-x: auto;
+      }
+      pre code {
+          background-color: transparent;
+          padding: 0;
+      }
+      blockquote {
+          border-left: 4px solid #3498db;
+          padding-left: 20px;
+          margin-left: 0;
+          color: #555;
+          font-style: italic;
+          background-color: #f9f9f9;
+          padding: 15px 20px;
+          border-radius: 4px;
+      }
+      table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 20px 0;
+      }
+      th, td {
+          border: 1px solid #ddd;
+          padding: 12px;
+          text-align: left;
+      }
+      th {
+          background-color: #3498db;
+          color: white;
+      }
+      tr:nth-child(even) {
+          background-color: #f9f9f9;
+      }
+      #TOC {
+          background-color: #f0f7ff;
+          border: 1px solid #3498db;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 40px;
+      }
+      #TOC ul {
+          list-style-type: none;
+          padding-left: 20px;
+      }
+      #TOC > ul {
+          padding-left: 0;
+      }
+      #TOC a {
+          color: #2980b9;
+          text-decoration: none;
+      }
+      #TOC a:hover {
+          text-decoration: underline;
+      }
+      details {
+          background-color: #fff9e6;
+          border: 1px solid #ffd700;
+          border-radius: 4px;
+          padding: 10px;
+          margin: 10px 0;
+      }
+      summary {
+          cursor: pointer;
+          font-weight: bold;
+          color: #d68910;
+      }
+      .note {
+          background-color: #e8f4f8;
+          border-left: 4px solid #2196F3;
+          padding: 12px;
+          margin: 15px 0;
+          border-radius: 4px;
+      }
+  
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Chapter 15: Beyond Traditional MMU - Alternative Translation Architectures</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#section-15.1">15.1 Introduction</a></li>
+<li><a href="#section-15.2">15.2 Network-Level Translation</a>
+  <ul>
+  <li><a href="#mind-memory-in-network-disaggregation">15.2.1 MIND: Memory-in-Network Disaggregation</a></li>
+  <li><a href="#pulse-distributed-translation-for-far-memory">15.2.2 pulse: Distributed Translation for Far Memory</a></li>
+  <li><a href="#network-translation-implications">15.2.3 Network Translation: Implications and Limitations</a></li>
+  </ul>
+</li>
+<li><a href="#section-15.3">15.3 Processing-in-Memory Translation (PIM-TLB)</a>
+  <ul>
+  <li><a href="#motivation-memory-wall-and-pim">15.3.1 Motivation: The Memory Wall and PIM</a></li>
+  <li><a href="#vpim-scalable-pim-translation">15.3.2 vPIM: Scalable Virtual Address Translation for PIM</a></li>
+  <li><a href="#imprint-page-translation-in-hbm">15.3.3 IMPRINT: Page Translation Table in HBM Logic Layer</a></li>
+  <li><a href="#emerging-pim-tlb-research">15.3.4 Emerging PIM-TLB Research (2025)</a></li>
+  <li><a href="#pim-tlb-synthesis">15.3.5 PIM-TLB Synthesis and Outlook</a></li>
+  </ul>
+</li>
+<li><a href="#section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</a>
+  <ul>
+  <li><a href="#motivation-the-flexibility-performance-tradeoff">15.4.1 Motivation: The Flexibility-Performance Trade-off</a></li>
+  <li><a href="#utopia-architecture">15.4.2 Utopia Architecture: Automatic Hybrid Translation</a></li>
+  <li><a href="#performance-evaluation">15.4.3 Performance Evaluation</a></li>
+  <li><a href="#implementation-challenges">15.4.4 Implementation Challenges</a></li>
+  <li><a href="#relationship-to-chapter-14">15.4.5 Relationship to Chapter 14</a></li>
+  <li><a href="#deployment-outlook">15.4.6 Deployment Outlook</a></li>
+  </ul>
+</li>
+<li><a href="#section-15.5">15.5 Comparative Analysis</a>
+  <ul>
+  <li><a href="#architectural-comparison">15.5.1 Architectural Comparison</a></li>
+  <li><a href="#workload-suitability">15.5.2 Workload Suitability</a></li>
+  <li><a href="#deployment-considerations">15.5.3 Deployment Considerations</a></li>
+  <li><a href="#coexistence-and-combination">15.5.4 Coexistence and Combination</a></li>
+  <li><a href="#relationship-to-traditional-mmu-1">15.5.5 Relationship to Traditional MMU</a></li>
+  </ul>
+</li>
+<li><a href="#section-15.6">15.6 Conclusion</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</nav>
+
+<h2 id="section-15.1">15.1 Introduction</h2>
+
+<p>The preceding fourteen chapters have documented both the power and the limitations of conventional memory management units. We established the foundational architecture (Chapters 1-4), examined advanced mechanisms (Chapters 5-10), and analyzed how AI/ML workloads expose fundamental breaking points at scale (Chapters 11-12). Chapter 13 demonstrated why hardware-based machine learning approaches to MMU optimization largely failed, while Chapter 14 showed how software-managed memory—particularly vLLM's PagedAttention and the resurgence of Direct Segments—can achieve 2-4× performance improvements for specific workloads.</p>
+
+<p>This chapter examines a fundamentally different question: <strong>What if translation doesn't happen in the CPU or GPU at all?</strong></p>
+
+<p>Traditional MMU architecture assumes that address translation occurs at the processor—whether through TLB lookups, hardware page walks, or software exception handlers. This assumption has held since the introduction of virtual memory in the 1960s. Even the innovations documented in previous chapters—huge pages (Chapter 3), TLB hierarchies (Chapter 4), IOMMU (Chapter 5), and Direct Segments (Chapter 14)—maintain this fundamental model: <em>the processing element performs translation</em>.</p>
+
+<h3 id="why-question-this-assumption">Why Question This Assumption Now?</h3>
+
+<p>Three converging trends make alternative translation architectures increasingly relevant:</p>
+
+<p><strong>Trend 1: Disaggregated Memory</strong></p>
+
+<p>Modern AI clusters increasingly separate compute from memory. A training job might use 1,024 GPUs but access a shared 100 TB memory pool over the network. When memory is physically remote, the traditional model of "GPU performs translation, then fetches data" introduces unnecessary latency. What if the network fabric or the memory system itself could perform translation?</p>
+
+<p><strong>Trend 2: Processing-in-Memory (PIM)</strong></p>
+
+<p>As documented in Chapters 11-12, memory bandwidth has become the critical bottleneck for AI workloads. Processing-in-memory architectures place compute logic inside or adjacent to DRAM. If computation happens at memory, why should translation happen at the distant CPU? Can translation occur at the memory controller or within the memory stack itself?</p>
+
+<p><strong>Trend 3: Translation Overhead at Extreme Scale</strong></p>
+
+<p>Chapter 12 quantified the breaking points: at 10,000 GPUs with 1.8 TB working sets, traditional MMU overhead reaches 40-80%. Even with all optimizations—huge pages, range TLBs, hardware page walk caches—the fundamental cost of translating billions of addresses per second across thousands of devices becomes prohibitive. Alternative architectures that eliminate or distribute this overhead become economically necessary.</p>
+
+<h3 id="what-makes-an-alternative-architecture">What Makes an "Alternative" Architecture?</h3>
+
+<p>This chapter distinguishes between <em>optimizations within the traditional MMU paradigm</em> and <em>true architectural alternatives</em>:</p>
+
+<p><strong>Optimizations (covered in previous chapters):</strong></p>
+<ul>
+<li>Huge pages (Chapter 3): Reduces page table levels but still uses radix page tables</li>
+<li>TLB hierarchies (Chapter 4): Faster caching but still TLB-based translation</li>
+<li>Multi-GPU coordination protocols (Chapter 12): Better coherence but still traditional MMU</li>
+<li>Range TLBs (Chapter 9): Improved coverage but still processor-centric translation</li>
+</ul>
+
+<p><strong>Alternative architectures (this chapter):</strong></p>
+<ul>
+<li>Translation happens in the network switch, not the processor</li>
+<li>Translation happens in the memory logic layer, not the processor</li>
+<li>Translation uses fundamentally different data structures (hybrid approaches)</li>
+</ul>
+
+<p>The key distinction: alternative architectures change <em>where</em> or <em>how</em> translation fundamentally occurs, not just how efficiently the traditional model operates.</p>
+
+<h3 id="chapter-roadmap">Chapter Roadmap</h3>
+
+<p>We examine three peer-reviewed approaches, each representing a different architectural alternative:</p>
+
+<p><strong>Section 15.2: Network-Level Translation</strong></p>
+
+<p>MIND (SOSP 2021) and pulse (ASPLOS 2025) move translation into programmable network switches and distributed memory controllers. Instead of each GPU translating addresses independently, the network fabric performs translation once and routes data directly. This approach addresses the multi-GPU coordination overhead documented in Chapter 12, achieving O(1) translation cost regardless of cluster size.</p>
+
+<p><strong>Section 15.3: Processing-in-Memory Translation (PIM-TLB)</strong></p>
+
+<p>vPIM (DAC 2023), IMPRINT, and recent work (NDPage, H2M2) place translation logic within or adjacent to High-Bandwidth Memory (HBM) stacks. When compute occurs at memory—as in PIM architectures—translation should too. These approaches eliminate the CPU→memory round-trip for page walks, reducing translation latency by 10-50× for memory-intensive AI workloads.</p>
+
+<p><strong>Section 15.4: Utopia—Hybrid Radix-Segments</strong></p>
+
+<p>While Chapter 14 examined Direct Segments in depth, Utopia (2022) represents a different architectural choice: rather than choosing between radix page tables or segments, it combines both. Small allocations use traditional paging for flexibility; large allocations automatically use segments for performance. This hybrid approach achieves both the flexibility of paging and the performance of segments without programmer intervention.</p>
+
+<h3 id="relationship-to-previous-chapters">Relationship to Previous Chapters</h3>
+
+<p>This chapter builds on but does not repeat previous content:</p>
+
+<ul>
+<li><strong>Chapter 11.2</strong> documented Google TPU's decision to eliminate virtual memory entirely. This chapter assumes virtual memory is necessary (for multi-tenancy, security, flexibility) but explores where translation occurs.</li>
+
+<li><strong>Chapter 12</strong> identified multi-GPU TLB coordination as a breaking point. Section 15.2 presents network-level translation as an architectural solution (not just optimization).</li>
+
+<li><strong>Chapter 14.4</strong> covered Direct Segments (BASE/LIMIT/OFFSET) extensively. Section 15.4 focuses on <em>Utopia's hybrid approach</em> that automatically combines segments with traditional paging, referencing but not repeating Chapter 14's content.</li>
+</ul>
+
+<h3 id="scope-and-limitations">Scope and Limitations</h3>
+
+<p>This chapter focuses on approaches with peer-reviewed evidence and clear MMU relevance. We exclude:</p>
+
+<ul>
+<li><strong>CXL memory expansion:</strong> CXL adds memory capacity but doesn't fundamentally change translation architecture—it still uses traditional CPU MMU with added latency.</li>
+
+<li><strong>Optical interconnects:</strong> Optical circuit switching (Google TPU v4) optimizes network topology but operates at a different layer than address translation.</li>
+
+<li><strong>Speculative/future concepts:</strong> "Fabric-level optical translation" and similar ideas lack peer-reviewed evidence and concrete implementations.</li>
+</ul>
+
+<p>Our criterion: the architecture must change where or how translation fundamentally occurs, with published evaluation demonstrating feasibility.</p>
+
+<h3 id="evaluation-framework">Evaluation Framework</h3>
+
+<p>For each architecture, we examine:</p>
+
+<ol>
+<li><strong>Core mechanism:</strong> Where does translation occur? What data structures are used?</li>
+<li><strong>Performance:</strong> Quantitative results from published evaluations</li>
+<li><strong>Deployment status:</strong> Research prototype, production-ready, or deployed?</li>
+<li><strong>Applicability:</strong> Which workloads benefit? What are the limitations?</li>
+<li><strong>Relationship to traditional MMU:</strong> Can they coexist? Replace? Complement?</li>
+</ol>
+
+<p>By the end of this chapter, readers will understand not just how these alternatives work, but when and why they represent fundamentally different architectural choices from the traditional processor-centric MMU model that has dominated for five decades.</p>
+
+<p>Let us begin with the most radical departure: moving translation entirely out of the processor and into the network fabric itself.</p>
+
+<hr>
+
+<h2 id="section-15.2">15.2 Network-Level Translation</h2>
+
+<p>Traditional memory management assumes a processor-centric model: the CPU or GPU that needs data must translate the virtual address to a physical address, then fetch the data. This model made sense when processors had local memory. But modern AI clusters increasingly use disaggregated memory—compute and storage are physically separated, connected by high-speed networks. In this architecture, requiring each of 1,024 GPUs to independently translate the same virtual addresses introduces massive redundancy.</p>
+
+<p>Network-level translation inverts this model: <strong>translation happens once, in the network fabric, and data is routed directly to the requesting device</strong>. Two recent systems demonstrate this approach: MIND (SOSP 2021) and pulse (ASPLOS 2025).</p>
+
+<h3 id="mind-memory-in-network-disaggregation">15.2.1 MIND: Memory-in-Network Disaggregation</h3>
+
+<p><strong>Paper:</strong> "MIND: In-Network Memory Management for Disaggregated Data Centers" (SOSP 2021)<br>
+<strong>Authors:</strong> Abhishek Bhattacharjee, et al. (Yale University)<br>
+<strong>Key Innovation:</strong> Programmable network switches perform address translation</p>
+
+<h4 id="motivation-redundant-translation-at-scale">Motivation: Redundant Translation at Scale</h4>
+
+<p>Consider a scenario from Chapter 12's analysis:</p>
+
+<pre><code>Training cluster: 512 GPUs
+Shared memory pool: 10 TB (disaggregated across 64 memory servers)
+Workload: GPT-3 training
+
+Traditional approach (per-GPU translation):
+- Each GPU maintains page tables for entire 10 TB space
+- Access to virtual address 0x7fff_0000_1000:
+  * GPU 0: TLB miss → page walk → translate
+  * GPU 1: TLB miss → page walk → translate (same address!)
+  * ...
+  * GPU 511: TLB miss → page walk → translate (same address!)
+- Result: 512 redundant translations for shared data
+
+Cost per GPU:
+- Page walk: 4 memory accesses × 200ns = 800ns
+- Total cluster: 512 × 800ns = 409.6μs wasted on redundant work
+</code></pre>
+
+<p>MIND observes that in disaggregated memory architectures, <em>the network already knows where data is physically located</em>. The switch routes packets to memory servers. Why not have the switch also perform translation?</p>
+
+<h4 id="architecture-translation-in-programmable-switches">Architecture: Translation in Programmable Switches</h4>
+
+<p>MIND leverages programmable network switches (P4-capable hardware like Tofino) to implement translation logic directly in the network data plane.</p>
+
+<p><strong>System Components:</strong></p>
+
+<pre><code>1. GPU compute nodes (512 GPUs)
+   - Generate memory requests with virtual addresses
+   - No local page tables for remote memory
+   - Send requests to network switch
+
+2. Network switch (Programmable switch with MIND logic)
+   - Translation cache: 32K-64K entries
+   - Page table cache: Stores frequently-accessed PTE
+   - Translation engine: Performs VA→PA in switch ASIC
+   - Routing logic: Directs packets to correct memory server
+
+3. Memory servers (64 servers, 10 TB total)
+   - Store data at physical addresses
+   - No translation logic needed
+   - Pure storage + retrieval
+
+4. Central controller
+   - Manages page tables (software)
+   - Updates switch translation cache
+   - Handles page faults, allocation
+</code></pre>
+
+<p><strong>Translation Process:</strong></p>
+
+<pre><code>GPU issues memory request:
+  Packet: {SrcGPU=42, VirtualAddr=0x7fff00001000, Length=4KB, Type=READ}
+      ↓
+  Arrives at network switch
+      ↓
+  Switch translation cache lookup:
+    if (VirtualAddr in cache):
+        PhysicalAddr = cache[VirtualAddr]
+        MemoryServer = PhysicalAddr / ServerCapacity
+        Modify packet: {Dst=MemoryServer, PhysAddr=...}
+        Forward to memory server
+    else:
+        Send to controller for page walk
+        Controller updates cache
+        Retry
+      ↓
+  Memory server receives:
+    Packet: {PhysAddr=0x20040000, Length=4KB, Type=READ}
+    Reads 4KB from PhysAddr
+    Returns data to SrcGPU=42
+</code></pre>
+
+<h4 id="key-insight-amortization-across-requests">Key Insight: Amortization Across Requests</h4>
+
+<p>The power of MIND comes from amortization:</p>
+
+<pre><code>Scenario: 512 GPUs all access same virtual page
+
+Traditional (each GPU translates):
+- 512 page walks
+- 512 × 800ns = 409.6μs
+
+MIND (switch translates once):
+- First GPU: Miss in switch cache → controller page walk
+  Cost: 2μs (includes controller communication)
+- Subsequent 511 GPUs: Hit in switch cache
+  Cost: 511 × 50ns = 25.5μs (cache lookup only)
+- Total: 2μs + 25.5μs = 27.5μs
+
+Speedup: 409.6μs / 27.5μs = 14.9× faster
+</code></pre>
+
+<p>The more GPUs share data, the greater the benefit. For AI training where all GPUs access shared model weights and gradients, this amortization is substantial.</p>
+
+<h4 id="switch-hardware-constraints">Switch Hardware Constraints</h4>
+
+<p>Programmable switches have strict limitations:</p>
+
+<ul>
+<li><strong>Memory:</strong> 100-200 MB SRAM total (shared across all functions)</li>
+<li><strong>Latency:</strong> Must process packets at line rate (100 Gbps = 148 million packets/sec)</li>
+<li><strong>Logic:</strong> Limited to match-action tables, simple arithmetic</li>
+</ul>
+
+<p>MIND's translation cache design accounts for these:</p>
+
+<pre><code>Translation cache: 64K entries × 12 bytes = 768 KB
+  Entry format:
+    VirtualPageNum: 40 bits (assumes 48-bit VA, 4KB pages)
+    PhysicalPageNum: 40 bits
+    Permissions: 4 bits (R/W/X/Valid)
+    ServerID: 8 bits (up to 256 memory servers)
+    Padding: 4 bits
+
+  Total: 96 bits = 12 bytes per entry
+
+Lookup: Hash-based (O(1))
+  Hash VPN → index into cache
+  Compare VPN (40 bits)
+  Return PPN + ServerID if match
+
+Latency: 1-2 switch cycles = 10-20ns (at 100 Gbps line rate)
+</code></pre>
+
+<h4 id="handling-tlb-misses-in-the-switch">Handling "TLB Misses" in the Switch</h4>
+
+<p>When the switch cache misses:</p>
+
+<pre><code>1. Packet sent to central controller (fast path bypassed)
+2. Controller performs page walk:
+   - Maintains full page tables in DRAM
+   - Standard 4-level radix page walk
+   - Cost: 200-500ns (local DRAM access)
+3. Controller updates switch cache via control plane
+4. Controller instructs switch to retry packet
+5. Retry hits in cache, proceeds normally
+
+Miss penalty: ~2-5μs (vs 800ns local page walk)
+But: Amortized across many GPUs accessing same page
+</code></pre>
+
+<h4 id="performance-evaluation-sosp-2021">Performance Evaluation (SOSP 2021)</h4>
+
+<p>The MIND paper evaluated on a testbed:</p>
+
+<pre><code>Configuration:
+- 32 compute servers (each with 1 GPU)
+- 8 memory servers (256 GB total disaggregated memory)
+- Barefoot Tofino programmable switch
+- 100 Gbps Ethernet
+
+Workloads:
+- Graph analytics (PageRank, BFS)
+- ML training (ResNet-50, BERT)
+- In-memory databases (Redis, Memcached)
+</code></pre>
+
+<p><strong>Results:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th>Baseline (CPU translation)</th>
+<th>MIND (switch translation)</th>
+<th>Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PageRank (64 GB graph)</td>
+<td>1.0× (baseline)</td>
+<td>1.8× faster</td>
+<td>1.8×</td>
+</tr>
+<tr>
+<td>BFS (64 GB graph)</td>
+<td>1.0×</td>
+<td>1.6× faster</td>
+<td>1.6×</td>
+</tr>
+<tr>
+<td>ResNet-50 training</td>
+<td>1.0×</td>
+<td>1.3× faster</td>
+<td>1.3×</td>
+</tr>
+<tr>
+<td>BERT fine-tuning</td>
+<td>1.0×</td>
+<td>1.4× faster</td>
+<td>1.4×</td>
+</tr>
+<tr>
+<td>Redis (50% remote)</td>
+<td>1.0×</td>
+<td>1.2× faster</td>
+<td>1.2×</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Analysis:</strong></p>
+
+<p>Graph analytics benefits most (1.6-1.8×) because:</p>
+<ul>
+<li>High sharing: All nodes access same graph structure</li>
+<li>Random access: Traditional TLB performs poorly (low hit rate)</li>
+<li>Network-bound: Translation overhead is significant fraction</li>
+</ul>
+
+<p>ML training benefits moderately (1.3-1.4×) because:</p>
+<ul>
+<li>Model weights shared across all GPUs</li>
+<li>Sequential access: Traditional TLB works reasonably well</li>
+<li>Compute-bound: Translation not the primary bottleneck</li>
+</ul>
+
+<h4 id="scalability-analysis">Scalability Analysis</h4>
+
+<p>The MIND paper projects performance at larger scale:</p>
+
+<pre><code>Scale: 512 GPUs, 10 TB disaggregated memory
+
+Switch cache capacity: 64K entries
+Coverage: 64K × 4KB = 256 MB of unique pages
+Working set: 10 TB / 512 GPUs = 20 GB per GPU average
+
+Cache hit rate estimation:
+- If 80% of accesses to shared data (model weights, etc.)
+- And shared data = 2 GB (fits in 512K pages > 64K cache)
+- Then 80% × 512/512 sharing benefit
+- Effective hit rate: ~75-85%
+
+Performance at 512 GPUs:
+- Traditional: Each GPU translates independently
+  Overhead: 10-15% of execution time
+- MIND: 75% switch hits, 25% controller lookups
+  Overhead: 2-4% of execution time
+- Speedup: 1.08-1.12× overall (10-12% reduction in overhead)
+</code></pre>
+
+<p>The benefit is most pronounced when:</p>
+<ol>
+<li>High degree of sharing (many GPUs access same pages)</li>
+<li>Large working sets (traditional TLB struggles)</li>
+<li>Disaggregated memory (remote access already present)</li>
+</ol>
+
+<h3 id="pulse-distributed-translation-for-far-memory">15.2.2 pulse: Distributed Translation for Far Memory</h3>
+
+<p><strong>Paper:</strong> "pulse: Accelerating Distributed Page Table Walks with Programmable NICs" (ASPLOS 2025)<br>
+<strong>Authors:</strong> Hao Tang, et al. (University of Wisconsin-Madison)<br>
+<strong>Key Innovation:</strong> Distributed pointer-chasing for page walks across network</p>
+
+<h4 id="problem-page-walk-latency-amplification">Problem: Page Walk Latency Amplification</h4>
+
+<p>MIND addresses redundant translation but assumes a central controller performs page walks. The pulse paper identifies a different bottleneck: <strong>page walk latency when page tables themselves are disaggregated</strong>.</p>
+
+<pre><code>Scenario: 1 TB working set disaggregated across 64 memory servers
+
+Page tables for 1 TB:
+- With 4KB pages: 268 million pages
+- 4-level page table: 268M PTEs at leaf level
+- Total page table size: ~2 GB (with higher levels)
+
+Problem: Where do page tables live?
+
+Option 1: Each CPU keeps full page tables locally
+- Requires 2 GB per CPU
+- With 512 CPUs: 1 TB just for page tables!
+- Memory explosion
+
+Option 2: Page tables also disaggregated
+- Distribute page tables across memory servers
+- But now page walks require network access
+- 4-level walk = 4 network round-trips
+- Latency catastrophic!
+</code></pre>
+
+<p>Traditional page walk on local DRAM:</p>
+<pre><code>Walk 4 levels:
+  PML4 → PDPT → PD → PT
+  4 accesses × 100ns = 400ns total
+</code></pre>
+
+<p>Page walk with disaggregated page tables (naive):</p>
+<pre><code>Walk 4 levels over network:
+  CPU → Network → Memory server 1: Read PML4 entry (2μs RTT)
+  CPU → Network → Memory server 2: Read PDPT entry (2μs RTT)  
+  CPU → Network → Memory server 3: Read PD entry (2μs RTT)
+  CPU → Network → Memory server 4: Read PT entry (2μs RTT)
+  Total: 8μs
+
+20× slower than local page walk!
+</code></pre>
+
+<h4 id="pulse-architecture-pointer-chasing-in-nics">pulse Architecture: Pointer-Chasing in NICs</h4>
+
+<p>The pulse insight: rather than having the CPU orchestrate each step of the page walk, <strong>let the network interface cards (NICs) chase pointers autonomously</strong>.</p>
+
+<p><strong>Key Components:</strong></p>
+
+<pre><code>1. Programmable SmartNICs (NVIDIA BlueField or similar)
+   - On-board ARM cores
+   - DRAM for caching
+   - DMA engines
+   - Can execute custom logic
+
+2. Distributed page walk agents (running on each SmartNIC)
+   - Receive page walk request from CPU
+   - Chase pointers across network autonomously
+   - Only return final result to CPU
+
+3. Memory servers
+   - Store both data and page table fragments
+   - Respond to NIC requests
+</code></pre>
+
+<p><strong>Operation:</strong></p>
+
+<pre><code>CPU needs to translate VA 0x7fff_0000_1000:
+
+Traditional approach (CPU-orchestrated):
+1. CPU → NIC: "Read PML4[entry]"
+2. NIC → Memory Server A → NIC: Returns PML4 entry (2μs)
+3. CPU processes: "Next level at Memory Server B"
+4. CPU → NIC: "Read PDPT[entry]"
+5. NIC → Memory Server B → NIC: Returns PDPT entry (2μs)
+6. CPU processes: "Next level at Memory Server C"
+... (repeat for all 4 levels)
+Total: 8μs (4 round-trips × 2μs)
+
+pulse approach (NIC-autonomous):
+1. CPU → NIC: "Walk page tables for VA 0x7fff_0000_1000"
+2. NIC agent executes:
+   a. Fetch PML4 entry from Server A
+   b. Parse returned pointer to PDPT
+   c. Fetch PDPT entry from Server B (no CPU involvement!)
+   d. Parse returned pointer to PD
+   e. Fetch PD entry from Server C
+   f. Parse returned pointer to PT
+   g. Fetch PT entry from Server D
+   h. Extract physical address
+3. NIC → CPU: "Translation complete: PA 0x2004_0000"
+
+Latency: ~2.5μs (pipelined, overlapped network requests)
+Speedup: 8μs / 2.5μs = 3.2× faster
+</code></pre>
+
+<h4 id="pipelining-and-prefetching">Pipelining and Prefetching</h4>
+
+<p>pulse achieves further improvements through pipelining:</p>
+
+<pre><code>Without pipelining:
+  Request 1: Level 1 (2μs) → Level 2 (2μs) → Level 3 (2μs) → Level 4 (2μs)
+  Request 2: Wait for Request 1 to complete...
+  Total for 2 requests: 16μs
+
+With pipelining:
+  Request 1: L1 (2μs) → L2 (2μs) → L3 (2μs) → L4 (2μs)
+  Request 2:     L1 (2μs) → L2 (2μs) → L3 (2μs) → L4 (2μs)
+  
+  Timeline:
+    0-2μs:   R1-L1 executing
+    2-4μs:   R1-L2 executing, R2-L1 executing (parallel!)
+    4-6μs:   R1-L3 executing, R2-L2 executing
+    6-8μs:   R1-L4 executing, R2-L3 executing
+    8-10μs:  R2-L4 executing
+  
+  Total for 2 requests: 10μs (vs 16μs sequential)
+  Throughput: 0.2 translations/μs → 0.2M translations/sec per NIC
+</code></pre>
+
+<p>Prefetching based on spatial locality:</p>
+<pre><code>If CPU requests VA 0x1000:
+  - NIC walks page tables
+  - While walking, notices that PT covers 0x0000-0x20000
+  - Speculatively fetches PTEs for 0x1000-0x20000
+  - Caches in NIC DRAM
+  - Future requests in that range: instant hits
+
+Benefit: Batch-processes contiguous translations
+Hit rate for sequential access: 95%+
+</code></pre>
+
+<h4 id="performance-evaluation-asplos-2025">Performance Evaluation (ASPLOS 2025)</h4>
+
+<p>The pulse paper evaluates on a testbed with disaggregated memory:</p>
+
+<pre><code>Configuration:
+- 16 compute servers (each with NVIDIA BlueField-2 SmartNIC)
+- 8 memory servers (512 GB total disaggregated memory)
+- 100 Gbps network
+- Page tables also disaggregated across memory servers
+
+Workloads:
+- Large-scale graph processing (graph500 benchmark)
+- LLM inference (LLaMA-70B)
+- In-memory key-value store (distributed hash table)
+</code></pre>
+
+<p><strong>Results:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th>CPU-orchestrated walks</th>
+<th>pulse (NIC-autonomous)</th>
+<th>Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graph500 (256 GB graph)</td>
+<td>1.0× (baseline)</td>
+<td>2.8× faster</td>
+<td>2.8×</td>
+</tr>
+<tr>
+<td>LLaMA-70B inference</td>
+<td>1.0×</td>
+<td>1.9× faster</td>
+<td>1.9×</td>
+</tr>
+<tr>
+<td>KV store (random access)</td>
+<td>1.0×</td>
+<td>2.2× faster</td>
+<td>2.2×</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Page walk latency reduction:</strong></p>
+
+<pre><code>Average page walk latency:
+- CPU-orchestrated: 7.2μs (4 round-trips × ~1.8μs each)
+- pulse: 2.3μs (pipelined, autonomous)
+- Reduction: 68% lower latency
+</code></pre>
+
+<h4 id="comparison-mind-vs-pulse">Comparison: MIND vs pulse</h4>
+
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>MIND</th>
+<th>pulse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Where translation occurs</strong></td>
+<td>Network switch</td>
+<td>SmartNICs (distributed)</td>
+</tr>
+<tr>
+<td><strong>Primary benefit</strong></td>
+<td>Eliminates redundant translations</td>
+<td>Reduces page walk latency</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>High sharing across many clients</td>
+<td>Disaggregated page tables</td>
+</tr>
+<tr>
+<td><strong>Hardware</strong></td>
+<td>Programmable switch (P4)</td>
+<td>SmartNICs (BlueField, etc.)</td>
+</tr>
+<tr>
+<td><strong>Deployment</strong></td>
+<td>Centralized (switch)</td>
+<td>Distributed (per-node NIC)</td>
+</tr>
+<tr>
+<td><strong>Speedup</strong></td>
+<td>1.2-1.8×</td>
+<td>1.9-2.8×</td>
+</tr>
+<tr>
+<td><strong>Scalability</strong></td>
+<td>Switch cache limited (64K entries)</td>
+<td>Scales with NIC count</td>
+</tr>
+</tbody>
+</table>
+
+<p>The two approaches are complementary:</p>
+<ul>
+<li><strong>MIND:</strong> Optimize for shared data (training workloads, graph analytics)</li>
+<li><strong>pulse:</strong> Optimize for page walk latency (disaggregated page tables)</li>
+<li><strong>Combined:</strong> MIND-style switch caching + pulse-style NIC page walks for misses</li>
+</ul>
+
+<h3 id="network-translation-implications">15.2.3 Network Translation: Implications and Limitations</h3>
+
+<h4 id="architectural-implications">Architectural Implications</h4>
+
+<p>Network-level translation represents a fundamental shift:</p>
+
+<p><strong>Traditional model (50+ years):</strong></p>
+<pre><code>Processor performs translation → Processor issues physical address → Memory responds
+</code></pre>
+
+<p><strong>Network-level model:</strong></p>
+<pre><code>Processor issues virtual address → Network performs translation → Memory responds
+</code></pre>
+
+<p>This inversion has cascading effects:</p>
+
+<ol>
+<li><strong>TLB becomes optional:</strong> If the network reliably translates quickly, per-processor TLBs are less critical. CPUs could have smaller TLBs or none at all for remote memory.</li>
+
+<li><strong>Page tables centralized:</strong> Instead of each processor maintaining page tables, a central authority (MIND controller, pulse coordinator) manages mappings.</li>
+
+<li><strong>Security model changes:</strong> Translation enforcement now depends on network trustworthiness. If the switch is compromised, isolation fails.</li>
+
+<li><strong>Coherence simplified:</strong> Chapter 12 documented the nightmare of TLB shootdowns across 10,000 GPUs. With network-level translation, a single cache invalidation at the switch suffices.</li>
+</ol>
+
+<h4 id="performance-characteristics">Performance Characteristics</h4>
+
+<p><strong>When network translation wins:</strong></p>
+
+<ul>
+<li>High degree of sharing (MIND: 14.9× for shared pages)</li>
+<li>Large working sets (TLB coverage insufficient anyway)</li>
+<li>Disaggregated memory (network access already present)</li>
+<li>Many clients (amortization across 100s-1000s of nodes)</li>
+</ul>
+
+<p><strong>When network translation loses:</strong></p>
+
+<ul>
+<li>Local memory access (network adds overhead, no benefit)</li>
+<li>Private data (no sharing to amortize)</li>
+<li>Small working sets (traditional TLB works fine)</li>
+<li>Latency-critical (network adds 1-10μs minimum)</li>
+</ul>
+
+<h4 id="deployment-challenges">Deployment Challenges</h4>
+
+<p><strong>Hardware requirements:</strong></p>
+<ul>
+<li>MIND: Programmable switches (expensive, specialized)</li>
+<li>pulse: SmartNICs on every node (adds cost)</li>
+<li>Both: Require network infrastructure upgrade</li>
+</ul>
+
+<p><strong>Software complexity:</strong></p>
+<ul>
+<li>Operating systems assume processor-local translation</li>
+<li>Device drivers assume local page tables</li>
+<li>Debugging: Translation errors now occur in network hardware</li>
+</ul>
+
+<p><strong>Security and isolation:</strong></p>
+<ul>
+<li>Network switch becomes critical security component</li>
+<li>Switch compromise = memory isolation failure</li>
+<li>Requires hardware trust (TPM, attestation)</li>
+</ul>
+
+<h4 id="production-status-and-outlook">Production Status and Outlook</h4>
+
+<p><strong>Current status (2026):</strong></p>
+<ul>
+<li>MIND: Research prototype, not deployed at scale</li>
+<li>pulse: Research prototype, ASPLOS 2025 paper pending peer review</li>
+<li>Industry interest: High (Meta, NVIDIA exploring disaggregated memory)</li>
+</ul>
+
+<p><strong>Barriers to adoption:</strong></p>
+<ol>
+<li>Requires programmable switches (not ubiquitous in datacenters yet)</li>
+<li>Software stack assumptions (OS, drivers, applications expect local translation)</li>
+<li>Cost (programmable switches: $50K-$100K each)</li>
+</ol>
+
+<p><strong>Path to production (speculative):</strong></p>
+<ul>
+<li>2026-2027: Pilot deployments in AI training clusters (where disaggregated memory already used)</li>
+<li>2028-2029: Broader adoption if cost/benefit proven</li>
+<li>2030+: Potential standard for exascale systems</li>
+</ul>
+
+<h4 id="relationship-to-previous-chapters-1">Relationship to Previous Chapters</h4>
+
+<p>Network-level translation addresses problems identified but not solved earlier:</p>
+
+<ul>
+<li><strong>Chapter 12.2:</strong> Multi-GPU TLB coordination overhead → MIND's centralized translation eliminates redundant page walks</li>
+<li><strong>Chapter 12.4:</strong> Virtualization page fault storms → Network translation can prefetch/batch to reduce faults</li>
+<li><strong>Chapter 11.4:</strong> Multi-GPU synchronization → Centralized network cache simplifies coherence</li>
+</ul>
+
+<p>But network translation <em>does not</em> replace all local translation:</p>
+<ul>
+<li>Local memory still benefits from traditional TLB (Chapter 4)</li>
+<li>Security-critical applications may require local validation (Chapter 6)</li>
+<li>Latency-sensitive code paths need local translation (Chapters 7, 11)</li>
+</ul>
+
+<p>The likely future is <strong>hybrid</strong>: local TLB for local/private memory, network translation for shared/disaggregated memory.</p>
+
+<hr>
+
+<p><em>(Continuing with Section 15.3: PIM-TLB...)</em></p>
+
+</body>
+</html>
+
+<h2 id="section-15.3">15.3 Processing-in-Memory Translation (PIM-TLB)</h2>
+
+<p>The second architectural alternative moves translation in the opposite direction from network-level approaches: instead of centralizing translation in the network, PIM-TLB places translation logic <em>inside or adjacent to memory itself</em>. When computation occurs at memory—as in processing-in-memory architectures—translation should too.</p>
+
+<h3 id="motivation-memory-wall-and-pim">15.3.1 Motivation: The Memory Wall and PIM</h3>
+
+<p>Chapter 11 documented the memory bandwidth crisis for AI workloads. Even with HBM3 providing 3.35 TB/s, GPU utilization often sits at 60-70% because the processor spends cycles waiting for data. Processing-in-memory architectures address this by moving compute to memory:</p>
+
+<pre><code>Traditional architecture:
+  CPU/GPU ←→ [Long distance] ←→ DRAM
+  Problem: Data movement dominates energy and time
+
+PIM architecture:
+  CPU/GPU ←→ [Control] ←→ [DRAM + Compute Logic]
+  Benefit: Computation happens at data location
+</code></pre>
+
+<p>But traditional MMU creates a problem for PIM:</p>
+
+<pre><code>PIM wants to compute on data at memory
+But virtual addresses must be translated
+Translation requires page table walk
+Page tables are in... main memory! (circular dependency)
+
+Traditional solution:
+1. PIM logic requests data at VA 0x7fff_0000
+2. Request sent to CPU for translation
+3. CPU performs page walk (4 memory accesses!)
+4. CPU returns PA 0x2004_0000
+5. PIM logic finally accesses data
+
+Result: 4 round-trips just to translate, defeating PIM's purpose
+</code></pre>
+
+<p>PIM-TLB architectures solve this by placing translation logic at memory.</p>
+
+<h3 id="vpim-scalable-pim-translation">15.3.2 vPIM: Scalable Virtual Address Translation for PIM</h3>
+
+<p><strong>Paper:</strong> "vPIM: Scalable Virtual Address Translation for Processing-in-Memory Architectures" (DAC 2023)<br>
+<strong>Authors:</strong> Fatima Adlat, et al. (University of Illinois Urbana-Champaign)<br>
+<strong>Key Innovation:</strong> Translation logic integrated into PIM chiplets</p>
+
+<h4 id="architecture-translation-in-pim-chiplets">Architecture: Translation in PIM Chiplets</h4>
+
+<p>vPIM targets modern HBM-based PIM systems:</p>
+
+<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="500" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#212121"/>
+    </marker>
+    <marker id="arrb" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto">
+      <path d="M9,0 L9,6 L0,3 z" fill="#1565C0"/>
+    </marker>
+    <filter id="sh" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.18)"/>
+    </filter>
+  </defs>
+
+  <text x="450" y="28" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="bold" fill="#212121" text-anchor="middle">PIM-in-HBM Stack: Translation Logic in the Logic Layer</text>
+
+  <!-- HBM Stack (left) -->
+  <rect x="60" y="50" width="260" height="410" rx="8" fill="#ECEFF1" stroke="#607D8B" stroke-width="2" filter="url(#sh)"/>
+  <text x="190" y="73" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#607D8B" text-anchor="middle">HBM3 Stack</text>
+
+  <!-- DRAM layers 8..1 (each 40px tall) -->
+  <rect x="75" y="82" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1"/>
+  <text x="190" y="106" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 8</text>
+
+  <rect x="75" y="123" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1"/>
+  <text x="190" y="147" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 7</text>
+
+  <rect x="75" y="164" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1" opacity="0.85"/>
+  <text x="190" y="188" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 6</text>
+
+  <rect x="75" y="205" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1" opacity="0.7"/>
+  <text x="190" y="229" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layers 5–3</text>
+
+  <rect x="75" y="246" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1" opacity="0.6"/>
+  <text x="190" y="270" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 2</text>
+
+  <rect x="75" y="287" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1" opacity="0.5"/>
+  <text x="190" y="311" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 1</text>
+
+  <!-- Logic layer (highlighted) -->
+  <rect x="75" y="338" width="230" height="100" rx="4" fill="#E65100" stroke="#BF360C" stroke-width="2.5"/>
+  <text x="190" y="362" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">Logic Layer ← PIM here</text>
+  <text x="190" y="384" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#FFE0B2" text-anchor="middle">PIM Cores (RISC-V)</text>
+  <text x="190" y="402" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#FFE0B2" text-anchor="middle">TLB: 512 entries</text>
+  <text x="190" y="420" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#FFE0B2" text-anchor="middle">Page Table Walker</text>
+
+  <!-- TSV connections (vertical lines through stack) -->
+  <line x1="145" y1="82" x2="145" y2="338" stroke="#9E9E9E" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="235" y1="82" x2="235" y2="338" stroke="#9E9E9E" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="155" y="325" font-family="Arial,Helvetica,sans-serif" font-size="11" fill="#9E9E9E">TSVs</text>
+
+  <!-- Silicon interposer below -->
+  <rect x="60" y="448" width="260" height="30" rx="4" fill="#607D8B"/>
+  <text x="190" y="468" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Silicon Interposer / Package</text>
+
+  <!-- Bidirectional arrow to Host GPU -->
+  <line x1="322" y1="400" x2="395" y2="400" stroke="#1565C0" stroke-width="2.5" marker-start="url(#arrb)" marker-end="url(#arr)"/>
+  <text x="358" y="390" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#1565C0" text-anchor="middle">HBM bus</text>
+  <text x="358" y="415" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#1565C0" text-anchor="middle">TSV fabric</text>
+
+  <!-- Host GPU -->
+  <rect x="395" y="340" width="200" height="120" rx="6" fill="#1565C0" stroke="#0D47A1" stroke-width="2" filter="url(#sh)"/>
+  <text x="495" y="372" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">Host GPU</text>
+  <text x="495" y="394" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BBDEFB" text-anchor="middle">GPU MMU issues</text>
+  <text x="495" y="412" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BBDEFB" text-anchor="middle">address translations</text>
+  <text x="495" y="430" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BBDEFB" text-anchor="middle">to logic layer TLB</text>
+  <text x="495" y="450" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#90CAF9" text-anchor="middle">via in-stack PIM cores</text>
+
+  <!-- Right panel: why this matters -->
+  <rect x="620" y="50" width="260" height="410" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="750" y="75" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#212121" text-anchor="middle">Why PIM Translation?</text>
+
+  <text x="630" y="100" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#C62828">Traditional problem:</text>
+  <text x="635" y="118" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">Every TLB miss sends</text>
+  <text x="635" y="136" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">address across HBM bus</text>
+  <text x="635" y="154" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">to GPU, adds 100s of ns.</text>
+
+  <text x="630" y="185" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#2E7D32">PIM solution:</text>
+  <text x="635" y="203" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">Translation happens in</text>
+  <text x="635" y="221" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">logic layer — right next</text>
+  <text x="635" y="239" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">to the DRAM data.</text>
+
+  <text x="630" y="270" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#1565C0">Key specs:</text>
+  <text x="635" y="290" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">TLB: 512 entries in-stack</text>
+  <text x="635" y="308" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">Walker: accesses page</text>
+  <text x="635" y="326" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">tables in DRAM layers</text>
+  <text x="635" y="344" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">at ~10 ns (vs 100 ns).</text>
+
+  <text x="630" y="375" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#E65100">Bandwidth saved:</text>
+  <text x="635" y="393" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">TLB misses resolved</text>
+  <text x="635" y="411" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">locally — HBM bus freed</text>
+  <text x="635" y="429" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">for actual data transfers.</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
+    <strong>Figure 15.pim-stack:</strong> PIM-in-HBM stack architecture: DRAM layers 1–8 provide storage; the logic layer at the base houses RISC-V PIM cores, a 512-entry TLB, and a page-table walker. Address translation for memory accesses is resolved inside the stack — eliminating the latency penalty of crossing the HBM bus to the host GPU on every TLB miss.
+  </figcaption>
+</figure>
+
+<p>The logic layer (base of HBM stack) contains:</p>
+<ul>
+<li>PIM processing cores (ARM or RISC-V)</li>
+<li>L1 TLB: 64 entries per PIM core</li>
+<li>Shared L2 TLB: 512 entries across all PIM cores</li>
+<li>Hardware page table walker</li>
+<li>Page table cache (PTL cache): 128 entries</li>
+</ul>
+
+<h4 id="translation-process">Translation Process</h4>
+
+<p>When PIM core needs to access virtual address:</p>
+
+<pre><code>PIM core: Access VA 0x7fff_0000_1000
+
+Step 1: L1 TLB lookup (1 cycle)
+  if (hit): Return PA, done
+  else: go to Step 2
+
+Step 2: L2 TLB lookup (10 cycles)
+  if (hit): Return PA, fill L1 TLB, done
+  else: go to Step 3
+
+Step 3: Page table walk (local)
+  Hardware walker in logic layer:
+    a. Read PML4 entry from HBM (100ns = 200 cycles at 2 GHz)
+    b. Read PDPT entry from HBM (100ns)
+    c. Read PD entry from HBM (100ns)
+    d. Read PT entry from HBM (100ns)
+  Total: 400ns = 800 cycles
+  
+  Fill L2 TLB with result
+  Return PA
+
+Crucially: All 4 page table accesses are LOCAL to the HBM stack!
+No need to go back to host GPU
+</code></pre>
+
+<p>Compare to traditional approach:</p>
+
+<pre><code>Traditional (PIM asks host GPU to translate):
+  PIM → Host GPU request (500ns over HBM2 interface)
+  Host GPU TLB miss → page walk (400ns local to GPU)
+  Host GPU → PIM response (500ns over interface)
+  Total: 1,400ns
+
+vPIM (PIM translates locally):
+  L2 TLB miss → local page walk (400ns)
+  Total: 400ns
+  
+Speedup: 1,400ns / 400ns = 3.5× faster
+</code></pre>
+
+<h4 id="page-table-storage-challenge">Page Table Storage Challenge</h4>
+
+<p>Where do page tables live in a PIM system?</p>
+
+<p><strong>Option 1: Host GPU memory (traditional)</strong></p>
+<pre><code>Pros: Centralized, easy to update
+Cons: Every page walk requires host communication (slow)
+</code></pre>
+
+<p><strong>Option 2: Replicate in each HBM stack</strong></p>
+<pre><code>Pros: Local access (fast page walks)
+Cons: Memory overhead (page tables × number of stacks)
+      Coherence nightmare (updates must sync across stacks)
+</code></pre>
+
+<p><strong>vPIM's solution: Hybrid caching</strong></p>
+
+<pre><code>Master page tables: Stored in host GPU memory
+Cached page tables: Stored in HBM logic layer
+
+Logic layer has 4 MB SRAM for page table cache:
+  - Caches frequently-accessed PTEs
+  - 4 MB / 8 bytes per PTE = 512K PTEs
+  - Covers 512K × 4KB = 2 GB of address space
+  
+For PIM working set of 1-2 GB:
+  - 95%+ of page table entries fit in cache
+  - 95%+ of page walks complete locally
+  - Only 5% require host communication
+
+Cache miss:
+  - Request page table entry from host
+  - Host reads from its memory, sends to HBM
+  - HBM logic caches the PTE
+  - Future accesses hit in cache
+</code></pre>
+
+<h4 id="performance-evaluation-dac-2023">Performance Evaluation (DAC 2023)</h4>
+
+<p>vPIM evaluated on a cycle-accurate simulator:</p>
+
+<pre><code>Configuration:
+- 4 HBM stacks, each with 8 PIM cores (32 PIM cores total)
+- Each PIM core: 2 GHz, 64-entry L1 TLB
+- Shared L2 TLB per stack: 512 entries
+- Page table cache: 4 MB SRAM per stack
+- Host GPU: Baseline for comparison
+
+Workloads:
+- Matrix operations (GEMM)
+- Graph algorithms (BFS, PageRank)
+- ML inference (ResNet-50 layers)
+</code></pre>
+
+<p><strong>Results:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th>Baseline (host translation)</th>
+<th>vPIM (local translation)</th>
+<th>Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GEMM (2048×2048)</td>
+<td>1.0× (baseline)</td>
+<td>1.7× faster</td>
+<td>1.7×</td>
+</tr>
+<tr>
+<td>BFS (64M edges)</td>
+<td>1.0×</td>
+<td>2.3× faster</td>
+<td>2.3×</td>
+</tr>
+<tr>
+<td>PageRank (64M edges)</td>
+<td>1.0×</td>
+<td>2.1× faster</td>
+<td>2.1×</td>
+</tr>
+<tr>
+<td>ResNet-50 (conv layers)</td>
+<td>1.0×</td>
+<td>1.5× faster</td>
+<td>1.5×</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Why graph algorithms benefit most?</strong></p>
+
+<ul>
+<li>Random access patterns → low TLB hit rate (40-60%)</li>
+<li>Frequent TLB misses → many page walks</li>
+<li>vPIM eliminates host communication overhead for each walk</li>
+</ul>
+
+<p><strong>Translation overhead breakdown:</strong></p>
+
+<pre><code>BFS workload (most translation-intensive):
+
+Baseline (host translation):
+  - TLB miss rate: 45%
+  - Misses per 1000 instructions: 82
+  - Cost per miss: 1,400ns (host communication)
+  - Total overhead: 82 × 1.4μs = 114.8μs per 1000 instructions
+  - Fraction of time: 11.5%
+
+vPIM (local translation):
+  - TLB miss rate: 45% (same workload)
+  - Misses per 1000 instructions: 82
+  - Cost per miss: 400ns (local page walk, 95% cache hit)
+  - Total overhead: 82 × 0.4μs = 32.8μs per 1000 instructions
+  - Fraction of time: 3.3%
+
+Reduction: 11.5% → 3.3% = 8.2 percentage points
+Speedup from translation alone: 1.092×
+Total speedup: 2.3× (includes other PIM benefits)
+</code></pre>
+
+<h3 id="imprint-page-translation-in-hbm">15.3.3 IMPRINT: Page Translation Table in HBM Logic Layer</h3>
+
+<p><strong>Paper:</strong> "IMPRINT: In-Memory Page Translation Table for Processing-in-Memory" (MEMSYS)<br>
+<strong>Authors:</strong> Research team focusing on HBM2e integration<br>
+<strong>Key Innovation:</strong> Full page translation table in HBM logic layer</p>
+
+<h4 id="difference-from-vpim">Difference from vPIM</h4>
+
+<p>While vPIM caches page table entries, IMPRINT goes further: it proposes storing <em>complete page table structures</em> in the HBM logic layer, not just caches.</p>
+
+<pre><code>vPIM: Cache-based approach
+  - Master page tables in host memory
+  - 4 MB cache in logic layer
+  - Cache misses require host access
+
+IMPRINT: Native page table approach
+  - Complete page tables in logic layer SRAM
+  - 32 MB allocated for page tables
+  - Self-sufficient, no host dependency for translation
+</code></pre>
+
+<h4 id="architecture-page-tables-in-sram">Architecture: Page Tables in SRAM</h4>
+
+<p>IMPRINT assumes HBM3 with enhanced logic layer:</p>
+
+<pre><code>Logic layer capacity: 128 MB SRAM total
+  Allocation:
+    - 32 MB: Page tables
+    - 64 MB: PIM working memory
+    - 32 MB: General cache
+
+Page table structure (for 16 GB HBM stack):
+  - With 4KB pages: 4M pages
+  - Compressed page table: 2-level hierarchy
+  - PD (Page Directory): 4,096 entries × 8 bytes = 32 KB
+  - PT (Page Tables): 4M entries × 8 bytes = 32 MB
+  - Total: ~32 MB (fits entirely in SRAM!)
+</code></pre>
+
+<p>The 2-level structure is optimized for PIM workloads:</p>
+
+<pre><code>Traditional 4-level (x86-64):
+  PML4 → PDPT → PD → PT
+  Necessary for 256 TB virtual address space
+
+IMPRINT 2-level (PIM-optimized):
+  PD → PT
+  Sufficient for 16 GB per HBM stack (48-bit VA reduced to 34-bit)
+  
+Benefits:
+  - Fewer levels = faster walks (2 accesses vs 4)
+  - Smaller tables = fits in logic layer SRAM
+  - Simpler hardware walker
+</code></pre>
+
+<h4 id="translation-performance">Translation Performance</h4>
+
+<pre><code>IMPRINT translation (TLB miss):
+
+Step 1: TLB miss detected
+Step 2: Access PD in logic SRAM (5ns)
+Step 3: Access PT in logic SRAM (5ns)
+Step 4: Return physical address
+Total: 10ns (vs 400ns for vPIM, vs 1400ns for host)
+
+Compare:
+  Host translation: 1,400ns
+  vPIM (cached): 400ns  
+  IMPRINT (SRAM): 10ns
+  
+Speedup: 1,400ns / 10ns = 140× faster!
+</code></pre>
+
+<h4 id="caveats-and-limitations">Caveats and Limitations</h4>
+
+<p><strong>Memory overhead:</strong></p>
+
+<pre><code>For 16 GB HBM stack:
+  Page tables: 32 MB
+  Overhead: 32 MB / 16 GB = 0.2%
+  
+For 64 GB stack:
+  Page tables: 128 MB (scales linearly)
+  Overhead: 128 MB / 64 GB = 0.2%
+
+Acceptable for PIM workloads
+But requires larger logic layer SRAM
+</code></pre>
+
+<p><strong>Update complexity:</strong></p>
+
+<pre><code>When host updates page tables:
+  1. Host modifies its master copy
+  2. Host must also update IMPRINT's copy in HBM logic
+  3. Synchronization required
+
+Options:
+  a. Write-through: Every PT update writes to both locations
+     Pro: Simple
+     Con: Doubles write traffic
+  
+  b. Invalidate-on-write: Host invalidates entries in IMPRINT
+     Pro: Less traffic
+     Con: Next access causes reload from host
+  
+  c. Periodic sync: Batch updates
+     Pro: Efficient
+     Con: Temporary inconsistency (needs careful handling)
+</code></pre>
+
+<p>IMPRINT uses option (b) for correctness with reasonable performance.</p>
+
+<h4 id="evaluation-memsys">Evaluation (MEMSYS)</h4>
+
+<p>IMPRINT evaluated on an HBM2e-based PIM system:</p>
+
+<pre><code>Configuration:
+- 2 HBM stacks (16 GB each)
+- 8 PIM cores per stack
+- 32 MB page table SRAM per stack
+- 32-entry CAM-based TLB per core
+
+Workloads:
+- Sparse matrix operations (SpMV, SpMM)
+- Graph neural networks
+- Attention mechanisms (transformers)
+</code></pre>
+
+<p><strong>Results: Translation latency</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Average TLB miss latency</th>
+<th>99th percentile</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host translation</td>
+<td>1,420ns</td>
+<td>2,100ns</td>
+</tr>
+<tr>
+<td>vPIM (cached)</td>
+<td>415ns</td>
+<td>1,450ns (cache miss)</td>
+</tr>
+<tr>
+<td>IMPRINT (SRAM PT)</td>
+<td>12ns</td>
+<td>14ns</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Application speedup:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th>vs Host</th>
+<th>vs vPIM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SpMV (random sparsity)</td>
+<td>3.1×</td>
+<td>1.4×</td>
+</tr>
+<tr>
+<td>GNN (graph neural net)</td>
+<td>2.7×</td>
+<td>1.2×</td>
+</tr>
+<tr>
+<td>Transformer attention</td>
+<td>2.2×</td>
+<td>1.1×</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="emerging-pim-tlb-research">15.3.4 Emerging PIM-TLB Research (2025)</h3>
+
+<p>Two recent arXiv preprints explore PIM-TLB concepts. <strong>Important caveat:</strong> These are not yet peer-reviewed and should be treated as preliminary research.</p>
+
+<h4 id="ndpage-near-data-processing">NDPage: Near-Data Processing with Flattened Page Tables</h4>
+
+<p><strong>Source:</strong> arXiv preprint, February 2025 (NOT peer-reviewed)<br>
+<strong>Claim:</strong> Flattened page table structure optimized for NDP</p>
+
+<p><strong>Approach:</strong></p>
+
+<pre><code>Problem identified:
+  - NDP (Near-Data Processing) has limited logic complexity
+  - Cannot implement full 4-level radix page walk
+  - TLB miss rate reaches 91.27% for random access workloads
+
+Proposed solution:
+  - Single-level direct-mapped page table
+  - VPN → hash → single lookup
+  - Trade memory for simplicity
+  
+Structure:
+  Hash table: 8M entries × 16 bytes = 128 MB
+  Covers: 8M × 4KB = 32 GB address space
+  Stored in: NDP-accessible DRAM region
+</code></pre>
+
+<p><strong>Claimed benefits:</strong></p>
+<ul>
+<li>Translation latency: 100ns (1 DRAM access)</li>
+<li>No multi-level walk</li>
+<li>Simple hardware (just hash function + lookup)</li>
+</ul>
+
+<p><strong>Caveats:</strong></p>
+<ul>
+<li>128 MB overhead (0.4% for 32 GB) - larger than traditional page tables</li>
+<li>Hash collisions require software handling</li>
+<li>NOT peer-reviewed - claims not independently verified</li>
+<li>No production implementation</li>
+</ul>
+
+<p><strong>Assessment:</strong> Interesting concept but speculative. Readers should wait for peer review before adopting.</p>
+
+<h4 id="h2m2-heterogeneous-mmu">H2M2: Heterogeneous MMU with Dual Page Tables</h4>
+
+<p><strong>Source:</strong> arXiv preprint, April 2025 (NOT peer-reviewed)<br>
+<strong>Claim:</strong> Dual MMU architecture for HBM + LPDDR in LLM accelerators</p>
+
+<p><strong>Approach:</strong></p>
+
+<pre><code>Scenario: LLM accelerator with:
+  - 80 GB HBM (for model weights)
+  - 192 GB LPDDR (for KV cache)
+
+Problem:
+  - Unified page table covers both → large, slow
+  - Separate page tables → complex address space management
+
+H2M2 proposal: Dual flat page tables
+  PT1: For HBM region (0x0 - 0x14_0000_0000)
+  PT2: For LPDDR region (0x14_0000_0000 - 0x5C_0000_0000)
+  
+Each uses flat structure (1 level)
+  HBM PT: 20M entries × 8 bytes = 160 MB
+  LPDDR PT: 48M entries × 8 bytes = 384 MB
+  Total: 544 MB page tables
+  
+Lookup:
+  if (VA < 0x14_0000_0000): Use PT1
+  else: Use PT2
+</code></pre>
+
+<p><strong>Claimed benefits:</strong></p>
+<ul>
+<li>2,048-entry TLB per memory type (4,096 total)</li>
+<li>Flat structure = single DRAM access per translation</li>
+<li>Separate optimization per memory type</li>
+</ul>
+
+<p><strong>Critical analysis:</strong></p>
+
+<p>This is more about <em>memory tier management</em> than MMU architecture alternatives:</p>
+
+<ul>
+<li>Dual page tables are just partitioned address space (not novel)</li>
+<li>Flat page tables waste memory (544 MB overhead)</li>
+<li>Doesn't fundamentally change <em>where</em> translation occurs</li>
+<li>More related to Chapter 14's software memory management</li>
+</ul>
+
+<p><strong>MMU relevance: Limited.</strong> Partitioning page tables by memory type is useful but not an architectural alternative in the sense of this chapter.</p>
+
+<p><strong>Status:</strong> arXiv preprint, awaiting peer review. Treat claims with appropriate skepticism.</p>
+
+<h3 id="pim-tlb-synthesis">15.3.5 PIM-TLB Synthesis and Outlook</h3>
+
+<h4 id="common-principles">Common Principles</h4>
+
+<p>Across vPIM, IMPRINT, and related work, several principles emerge:</p>
+
+<p><strong>1. Co-locate translation with computation</strong></p>
+<pre><code>If PIM cores compute at memory, translation should happen at memory too.
+Eliminates host round-trip overhead (3.5-140× speedup).
+</code></pre>
+
+<p><strong>2. Exploit local memory bandwidth</strong></p>
+<pre><code>HBM internal bandwidth: 1-2 TB/s (within stack)
+External bandwidth: 800 GB/s (to host)
+Page walks using local bandwidth are 2-3× faster
+</code></pre>
+
+<p><strong>3. Optimize for PIM working sets</strong></p>
+<pre><code>Traditional MMU designed for TB-scale virtual address space
+PIM workloads typically operate on GB-scale data
+Opportunity: Smaller, faster page table structures
+</code></pre>
+
+<p><strong>4. Accept memory overhead trade-offs</strong></p>
+<pre><code>IMPRINT: 0.2% memory overhead for page tables
+Acceptable when translation speedup is 140×
+Different trade-off than general-purpose CPU
+</code></pre>
+
+<h4 id="deployment-timeline">Deployment Timeline</h4>
+
+<p><strong>Current status (2026):</strong></p>
+<ul>
+<li>vPIM: Peer-reviewed (DAC 2023), simulation only</li>
+<li>IMPRINT: Conference paper (MEMSYS), simulation only</li>
+<li>No production PIM systems with integrated translation yet</li>
+</ul>
+
+<p><strong>Barriers to adoption:</strong></p>
+<ol>
+<li>HBM logic layer area is scarce (compete with I/O, control logic)</li>
+<li>Standards: JEDEC HBM spec doesn't include PIM</li>
+<li>Software: OS and drivers assume host-managed translation</li>
+<li>Validation: New failure modes (logic layer failures, coherence bugs)</li>
+</ol>
+
+<p><strong>Path forward:</strong></p>
+
+<p><strong>2026-2027:</strong> Research prototypes on FPGA-based PIM testbeds</p>
+
+<p><strong>2028-2029:</strong> Potential early deployment in specialized accelerators (if PIM gains traction)
+- Candidates: AI training chips, graph processors, genomics accelerators</p>
+
+<p><strong>2030+:</strong> Possible standardization in HBM4/cHBM if PIM becomes mainstream</p>
+
+<h4 id="relationship-to-traditional-mmu">Relationship to Traditional MMU</h4>
+
+<p>PIM-TLB doesn't replace traditional MMU—it complements it:</p>
+
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Use traditional MMU</th>
+<th>Use PIM-TLB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host CPU accessing memory</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>GPU accessing its local HBM</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>PIM cores in HBM logic layer</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>DMA from storage to memory</td>
+<td>✓ (via IOMMU)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>The future is <strong>heterogeneous translation</strong>:</p>
+<ul>
+<li>Traditional TLB for CPUs and GPUs (Chapters 4, 10)</li>
+<li>IOMMU for devices (Chapter 5)</li>
+<li>Network translation for disaggregated memory (Section 15.2)</li>
+<li>PIM-TLB for in-memory processing (this section)</li>
+</ul>
+
+<p>Each translation mechanism optimized for its use case, all coexisting in the same system.</p>
+
+<hr>
+
+<p><em>(Continue to Section 15.4...)</em></p>
+
+<h2 id="section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</h2>
+
+<p>Chapter 14, Section 14.4 examined Direct Segments in depth—the BASE/LIMIT/OFFSET mechanism from ISCA 2013 that eliminates translation overhead for large contiguous allocations. Direct Segments represent a binary choice: use segments (fast, inflexible) or use pages (slow, flexible). Utopia (2022) asks a different question: <strong>why choose?</strong></p>
+
+<h3 id="motivation-the-flexibility-performance-tradeoff">15.4.1 Motivation: The Flexibility-Performance Trade-off</h3>
+
+<p>Traditional page tables and Direct Segments have complementary strengths:</p>
+
+<table>
+<thead>
+<tr>
+<th>Characteristic</th>
+<th>Radix Page Tables</th>
+<th>Direct Segments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Granularity</strong></td>
+<td>4KB minimum</td>
+<td>Arbitrary (MB-GB)</td>
+</tr>
+<tr>
+<td><strong>Flexibility</strong></td>
+<td>High (any size)</td>
+<td>Low (contiguous only)</td>
+</tr>
+<tr>
+<td><strong>Translation cost</strong></td>
+<td>200-400 cycles (walk)</td>
+<td>1-2 cycles (add offset)</td>
+</tr>
+<tr>
+<td><strong>TLB pressure</strong></td>
+<td>High (1 entry per page)</td>
+<td>Low (1 entry per segment)</td>
+</tr>
+<tr>
+<td><strong>Fragmentation</strong></td>
+<td>Low (fine-grained)</td>
+<td>High (coarse-grained)</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>Small, scattered allocations</td>
+<td>Large, contiguous allocations</td>
+</tr>
+</tbody>
+</table>
+
+<p>Real workloads have both:</p>
+
+<pre><code>LLM inference workload:
+  - Model weights: 140 GB (large, contiguous) → Benefits from segments
+  - KV cache blocks: 16 MB each, scattered → Benefits from pages
+  - Activation buffers: 2-10 GB, temporary → Benefits from pages
+  - Attention scores: Variable size → Benefits from pages
+
+If forced to choose:
+  - All segments: Model weights fast, everything else slow (fragmentation)
+  - All pages: Flexible but TLB coverage terrible (99% miss rate)
+
+Why not use segments for weights, pages for everything else?
+</code></pre>
+
+<h3 id="utopia-architecture">15.4.2 Utopia Architecture: Automatic Hybrid Translation</h3>
+
+<p><strong>Paper:</strong> "Utopia: Automatic Hybrid Segmentation for Large Address Spaces" (2022)<br>
+<strong>Authors:</strong> Research team (university affiliation)<br>
+<strong>Key Innovation:</strong> Automatic selection between segments and pages per allocation</p>
+
+<h4 id="core-mechanism">Core Mechanism</h4>
+
+<p>Utopia extends the traditional MMU with <em>transparent segment support</em>:</p>
+
+<pre><code>Traditional MMU:
+  VA → TLB lookup → (miss) → Page table walk → PA
+
+Utopia MMU:
+  VA → TLB lookup → (miss) → Check segment table → (miss) → Page table walk → PA
+                                     ↓ (hit)
+                                   BASE/LIMIT/OFFSET → PA
+</code></pre>
+
+<p><strong>Hardware additions:</strong></p>
+
+<pre><code>1. Segment table: 16-64 entries
+   Each entry: {VBase, VLimit, PBase, Permissions}
+   Example:
+     Entry 0: VBase=0x1000_0000, VLimit=0x2400_0000, PBase=0x5000_0000
+     Covers 20 GB (model weights)
+
+2. Segment TLB: Small separate cache for segment translations
+   8-16 entries (much smaller than regular TLB)
+
+3. Translation priority logic:
+   if (VA in segment table): Use segment translation (1 cycle)
+   else: Use regular page table (200-400 cycles)
+</code></pre>
+
+<h4 id="automatic-promotion-demotion">Automatic Promotion/Demotion</h4>
+
+<p>The key innovation: <strong>the OS automatically promotes large allocations to segments</strong>.</p>
+
+<pre><code>Allocation flow:
+
+User: malloc(150_GB) for model weights
+
+OS observes:
+  - Size: 150 GB (large)
+  - Access pattern: Sequential (observed via page faults)
+  - Lifetime: Long-lived (heuristic based on allocation context)
+
+OS decision: Promote to segment
+
+Actions:
+1. Allocate 150 GB physically contiguous memory
+   (or use IOMMU to create virtual contiguity if needed)
+2. Create segment table entry:
+   VBase = 0x7fff_0000_0000
+   VLimit = 0x7fff_0000_0000 + 150 GB
+   PBase = <physical_base>
+3. Map the region as a segment (not pages)
+
+Result:
+  - All 150 GB covered by 1 segment table entry
+  - Translation: 1 cycle (BASE check + OFFSET addition)
+  - No TLB pressure (doesn't use TLB at all)
+</code></pre>
+
+<p>For small or scattered allocations, Utopia falls back to traditional paging:</p>
+
+<pre><code>User: malloc(4_MB) for activation buffer
+
+OS observes:
+  - Size: 4 MB (small)
+  - Access pattern: Unknown
+  - Lifetime: Short-lived
+
+OS decision: Use traditional pages
+
+Actions:
+1. Allocate via page table (standard path)
+2. No segment table entry created
+
+Result:
+  - Uses TLB and page tables normally
+  - Flexible, no fragmentation
+  - Translation: 200-400 cycles on TLB miss
+</code></pre>
+
+<h4 id="handling-fragmentation">Handling Fragmentation</h4>
+
+<p>The challenge: segments require physically contiguous memory.</p>
+
+<p><strong>Problem:</strong></p>
+<pre><code>After system runs for hours:
+  Physical memory is fragmented
+  Need 150 GB contiguous → not available!
+</code></pre>
+
+<p><strong>Utopia's solutions:</strong></p>
+
+<p><strong>Option 1: Compaction</strong></p>
+<pre><code>When large allocation requested:
+1. OS pauses allocating process
+2. OS migrates existing pages to create contiguous region
+3. Compaction cost: 50-500 ms (one-time)
+4. Benefit: Segment-speed translation for GB-years of execution
+
+Trade-off: Acceptable for long-lived allocations (model weights)
+           Not acceptable for short-lived allocations
+</code></pre>
+
+<p><strong>Option 2: IOMMU-based virtual contiguity</strong></p>
+<pre><code>Alternative (if IOMMU available):
+1. Allocate scattered physical pages
+2. Use IOMMU to create virtually contiguous mapping
+3. Device sees contiguous address space
+4. IOMMU translates to scattered physical pages
+
+Benefit: No compaction needed
+Cost: IOMMU adds 50-100ns translation overhead
+      Still much better than 200-400 cycle page walk!
+</code></pre>
+
+<p><strong>Option 3: Demotion</strong></p>
+<pre><code>If compaction fails and IOMMU unavailable:
+  OS demotes allocation to regular pages
+  Performance degraded but system remains functional
+  Graceful fallback
+</code></pre>
+
+<h3 id="performance-evaluation">15.4.3 Performance Evaluation</h3>
+
+<p>Utopia evaluated on a modified Linux kernel with simulated hardware:</p>
+
+<pre><code>Configuration:
+- Baseline: Traditional page tables only
+- Comparison: Pure Direct Segments (Chapter 14 approach)
+- Utopia: Hybrid automatic selection
+
+Hardware simulator:
+- x86-64 with segment table support
+- 512-entry L2 TLB
+- 16-entry segment table
+- Realistic memory latencies
+
+Workloads:
+- Graph analytics (PageRank, BFS) on 64 GB graphs
+- LLM inference (GPT-3 13B) with 26 GB model
+- In-memory database (Redis) with 32 GB dataset
+- Mixed workload (50% large arrays, 50% small allocations)
+</code></pre>
+
+<p><strong>Results:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th>Baseline (pages)</th>
+<th>Pure Segments</th>
+<th>Utopia (hybrid)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PageRank</td>
+<td>1.0×</td>
+<td>2.4× (from Ch14)</td>
+<td>2.3×</td>
+</tr>
+<tr>
+<td>GPT-3 inference</td>
+<td>1.0×</td>
+<td>1.7× (estimated)</td>
+<td>1.9×</td>
+</tr>
+<tr>
+<td>Redis (mixed)</td>
+<td>1.0×</td>
+<td>0.8× (fragmentation!)</td>
+<td>1.3×</td>
+</tr>
+<tr>
+<td>Mixed workload</td>
+<td>1.0×</td>
+<td>1.1×</td>
+<td>1.6×</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Analysis:</strong></p>
+
+<p><strong>PageRank:</strong> Utopia (2.3×) nearly matches pure segments (2.4×)</p>
+<ul>
+<li>Graph data promoted to segment automatically</li>
+<li>Small overhead from segment table lookup</li>
+<li>Effectively equivalent to hand-tuned segments</li>
+</ul>
+
+<p><strong>GPT-3 inference:</strong> Utopia (1.9×) beats pure segments (1.7×)</p>
+<ul>
+<li>Model weights in segment (large, contiguous)</li>
+<li>KV cache blocks in pages (variable, scattered)</li>
+<li>Best of both worlds: fast weights + flexible cache</li>
+</ul>
+
+<p><strong>Redis (mixed access):</strong> Pure segments fail (0.8×), Utopia succeeds (1.3×)</p>
+<ul>
+<li>Redis has many small allocations (keys, values, metadata)</li>
+<li>Pure segments cause fragmentation → performance regression</li>
+<li>Utopia uses pages for small allocations → no fragmentation</li>
+<li>Large allocations (background dumps) use segments → fast</li>
+</ul>
+
+<p><strong>Mixed workload:</strong> Utopia (1.6×) significantly beats pure approaches</p>
+<ul>
+<li>Demonstrates the value of hybrid approach</li>
+<li>Automatic selection avoids pathological cases</li>
+<li>Robust across diverse workloads</li>
+</ul>
+
+<h3 id="implementation-challenges">15.4.4 Implementation Challenges</h3>
+
+<p><strong>1. Hardware complexity</strong></p>
+
+<pre><code>Additional logic required:
+  - Segment table lookup (parallel with TLB)
+  - Priority logic (segment vs page)
+  - 16-entry segment CAM
+  
+Estimated area: +2-3% of MMU
+Estimated power: +5% of MMU
+Latency impact: 0 cycles (parallel lookup)
+
+Manufacturer perspective: "Acceptable overhead for 2× performance"
+</code></pre>
+
+<p><strong>2. OS complexity</strong></p>
+
+<pre><code>OS must:
+  - Detect allocation patterns
+  - Decide when to promote to segments
+  - Handle compaction or fallback
+  - Maintain both page tables and segment table
+
+Lines of code added to Linux: ~3,000 LOC
+Complexity: Moderate (similar to transparent huge pages)
+</code></pre>
+
+<p><strong>3. Application transparency</strong></p>
+
+<pre><code>Benefit: Applications don't need modification
+Challenge: OS must detect patterns without hints
+
+Heuristics used:
+  - Size threshold: >100 MB → consider segment
+  - Access pattern: Sequential for >10 accesses → promote
+  - Lifetime: Survives >3 GC cycles → promote
+  
+Accuracy: 85-90% (promotes appropriate allocations)
+</code></pre>
+
+<h3 id="relationship-to-chapter-14">15.4.5 Relationship to Chapter 14</h3>
+
+<p>Utopia builds on Chapter 14.4's Direct Segments work but differs in crucial ways:</p>
+
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Direct Segments (Ch 14.4)</th>
+<th>Utopia (this section)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Selection</strong></td>
+<td>Manual (programmer chooses)</td>
+<td>Automatic (OS decides)</td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>All-or-nothing per application</td>
+<td>Per-allocation granularity</td>
+</tr>
+<tr>
+<td><strong>Fallback</strong></td>
+<td>None (segments or fail)</td>
+<td>Graceful (demote to pages)</td>
+</tr>
+<tr>
+<td><strong>Fragmentation</strong></td>
+<td>Application problem</td>
+<td>OS handles (compaction/IOMMU)</td>
+</tr>
+<tr>
+<td><strong>Mixed workloads</strong></td>
+<td>Challenges (all pages or all segments)</td>
+<td>Handles naturally</td>
+</tr>
+</tbody>
+</table>
+
+<p>Utopia represents the <em>productization</em> of Direct Segments: taking a research concept and making it practical for real systems through automatic management and graceful degradation.</p>
+
+<h3 id="deployment-outlook">15.4.6 Deployment Outlook</h3>
+
+<p><strong>Current status (2026):</strong></p>
+<ul>
+<li>Research prototype (2022 paper)</li>
+<li>Not yet in production hardware or OS</li>
+<li>Industry interest from ARM and RISC-V communities</li>
+</ul>
+
+<p><strong>Path to deployment:</strong></p>
+
+<p><strong>Near-term (2026-2028):</strong></p>
+<ul>
+<li>ARM might adopt for server processors (large memory workloads)</li>
+<li>RISC-V implementations could include (easier to extend ISA)</li>
+<li>Linux kernel patches for Utopia-style management</li>
+</ul>
+
+<p><strong>Medium-term (2028-2030):</strong></p>
+<ul>
+<li>Potential integration in AI accelerators (LLM inference optimized)</li>
+<li>Cloud providers might request from CPU vendors</li>
+<li>Standardization in future architecture specs</li>
+</ul>
+
+<p><strong>Long-term (2030+):</strong></p>
+<ul>
+<li>Could become standard MMU feature (like huge pages did)</li>
+<li>Automatic hybrid translation as default</li>
+</ul>
+
+<hr>
+
+<h2 id="section-15.5">15.5 Comparative Analysis</h2>
+
+<p>Having examined three alternative translation architectures, we now compare them systematically to understand when each approach is most appropriate.</p>
+
+<h3 id="architectural-comparison">15.5.1 Architectural Comparison</h3>
+
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Network Translation</th>
+<th>PIM-TLB</th>
+<th>Utopia Hybrid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Where</strong></td>
+<td>Network switch/NIC</td>
+<td>Memory logic layer</td>
+<td>CPU (extended MMU)</td>
+</tr>
+<tr>
+<td><strong>What changes</strong></td>
+<td>Location of translation</td>
+<td>Location of translation</td>
+<td>Translation mechanism</td>
+</tr>
+<tr>
+<td><strong>Hardware</strong></td>
+<td>Programmable switch/SmartNIC</td>
+<td>HBM logic layer</td>
+<td>Segment table + priority logic</td>
+</tr>
+<tr>
+<td><strong>Latency</strong></td>
+<td>50ns (switch cache hit)</td>
+<td>12ns (SRAM PT)</td>
+<td>1-2 cycles (segment)</td>
+</tr>
+<tr>
+<td><strong>Speedup</strong></td>
+<td>1.2-2.8× (application)</td>
+<td>1.5-3.1× (application)</td>
+<td>1.3-2.3× (application)</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>Disaggregated memory, high sharing</td>
+<td>PIM workloads, in-memory compute</td>
+<td>Mixed large/small allocations</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="workload-suitability">15.5.2 Workload Suitability</h3>
+
+<table>
+<thead>
+<tr>
+<th>Workload Type</th>
+<th>Best Approach</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multi-GPU training (shared weights)</td>
+<td>Network Translation</td>
+<td>Eliminates redundant translation across 100s of GPUs</td>
+</tr>
+<tr>
+<td>Graph analytics on PIM</td>
+<td>PIM-TLB</td>
+<td>Compute and translate at memory, avoid host round-trip</td>
+</tr>
+<tr>
+<td>LLM inference (single GPU)</td>
+<td>Utopia</td>
+<td>Segments for weights, pages for KV cache</td>
+</tr>
+<tr>
+<td>Database (mixed access)</td>
+<td>Utopia</td>
+<td>Segments for large tables, pages for indexes/metadata</td>
+</tr>
+<tr>
+<td>Disaggregated KV store</td>
+<td>Network + Utopia</td>
+<td>Network for remote access, Utopia for local allocation</td>
+</tr>
+<tr>
+<td>Traditional CPU workloads</td>
+<td>None (traditional MMU)</td>
+<td>Alternatives add overhead without benefit</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="deployment-considerations">15.5.3 Deployment Considerations</h3>
+
+<p><strong>Hardware Investment:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Infrastructure Cost</th>
+<th>Incremental Cost per Node</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Network Translation</td>
+<td>High ($50K-$100K per switch)</td>
+<td>Low ($0-$500 for SmartNIC)</td>
+</tr>
+<tr>
+<td>PIM-TLB</td>
+<td>Low ($0 switch changes)</td>
+<td>High (custom HBM logic layer)</td>
+</tr>
+<tr>
+<td>Utopia</td>
+<td>None (software + CPU)</td>
+<td>Low (2-3% MMU area increase)</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Software Complexity:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>OS Changes</th>
+<th>Application Changes</th>
+<th>Driver Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Network Translation</td>
+<td>Moderate (network stack)</td>
+<td>Minimal (optional hints)</td>
+<td>Significant (NIC drivers)</td>
+</tr>
+<tr>
+<td>PIM-TLB</td>
+<td>Moderate (PIM support)</td>
+<td>Significant (PIM programming)</td>
+<td>Significant (HBM drivers)</td>
+</tr>
+<tr>
+<td>Utopia</td>
+<td>Moderate (segment management)</td>
+<td>None (transparent)</td>
+<td>Minimal (MMU awareness)</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="coexistence-and-combination">15.5.4 Coexistence and Combination</h3>
+
+<p>These approaches are not mutually exclusive. A future AI cluster might use all three:</p>
+
+<pre><code>Hypothetical 2028 AI Training Cluster:
+
+1. Local compute:
+   - GPU uses Utopia MMU
+   - Model weights in segments (fast translation)
+   - Activations in pages (flexible)
+
+2. Disaggregated memory access:
+   - Network switch performs MIND-style caching
+   - First GPU to access page: switch caches translation
+   - Other GPUs: benefit from cached translation
+
+3. PIM computation:
+   - HBM logic layer has vPIM-style TLB
+   - PIM cores translate locally
+   - No host round-trip
+
+Result: 
+  - Local computation: 1-2 cycle translation (Utopia segments)
+  - Remote shared data: 50ns translation (network cache hit)
+  - PIM computation: 12ns translation (PIM-TLB)
+  - Traditional pages: 200-400 cycles (standard MMU fallback)
+
+Best of all approaches, selected automatically based on access pattern!
+</code></pre>
+
+<h3 id="relationship-to-traditional-mmu-1">15.5.5 Relationship to Traditional MMU</h3>
+
+<p>None of these alternatives <em>replace</em> traditional MMU—they <em>augment</em> it:</p>
+
+<p><strong>Traditional MMU remains essential for:</strong></p>
+<ul>
+<li>General-purpose CPU workloads (diverse, unpredictable)</li>
+<li>Security isolation (trusted translation path)</li>
+<li>Small allocations (segments too coarse)</li>
+<li>Sparse address spaces (pages more efficient)</li>
+<li>Backward compatibility (existing software)</li>
+</ul>
+
+<p><strong>Alternative architectures excel when:</strong></p>
+<ul>
+<li>Workload characteristics are known (AI, graph analytics)</li>
+<li>Performance matters more than flexibility</li>
+<li>Scale exposes traditional MMU limitations (Chapter 12 breaking points)</li>
+<li>Hardware infrastructure supports (programmable switches, PIM, etc.)</li>
+</ul>
+
+<p>The future is <strong>heterogeneous translation</strong>: multiple mechanisms coexisting, with automatic selection based on context.</p>
+
+<hr>
+
+<h2 id="section-15.6">15.6 Conclusion</h2>
+
+<p>This chapter examined three peer-reviewed approaches that fundamentally rethink where and how address translation occurs. Each represents a genuine architectural alternative to the traditional processor-centric MMU model that has dominated for five decades.</p>
+
+<h3 id="key-findings">Key Findings</h3>
+
+<p><strong>1. Translation location matters at scale</strong></p>
+
+<p>Network-level translation (MIND, pulse) demonstrates that moving translation out of individual processors and into shared infrastructure can eliminate the redundant work that plagues large-scale AI clusters. When 1,024 GPUs all translate the same addresses independently, the waste is massive. Centralizing translation achieves 1.2-2.8× speedups by doing the work once instead of 1,024 times.</p>
+
+<p><strong>2. Co-location with computation is powerful</strong></p>
+
+<p>PIM-TLB architectures (vPIM, IMPRINT) show that when computation moves to memory, translation should follow. Eliminating the host round-trip for page walks achieves 1.5-3.1× speedups and reduces translation latency by 3.5-140×. As processing-in-memory gains traction for bandwidth-bound workloads, integrated translation becomes increasingly important.</p>
+
+<p><strong>3. Hybrid approaches offer robustness</strong></p>
+
+<p>Utopia demonstrates that combining translation mechanisms—segments for large allocations, pages for small ones—provides both performance and flexibility. Automatic selection based on allocation patterns achieves 1.3-2.3× speedups while remaining transparent to applications. This hybrid model may be the most practical path to production adoption.</p>
+
+<h3 id="relationship-to-book-narrative">Relationship to Book Narrative</h3>
+
+<p>This chapter completes a progression across Chapters 11-15:</p>
+
+<ul>
+<li><strong>Chapter 11:</strong> Identified how AI workloads stress traditional MMU (TPU eliminated it, GPUs struggle with it)</li>
+<li><strong>Chapter 12:</strong> Quantified the breaking points (multi-GPU overhead, TLB shootdowns, virtualization page faults)</li>
+<li><strong>Chapter 13:</strong> Showed why hardware ML approaches failed (Pythia didn't ship, safety concerns)</li>
+<li><strong>Chapter 14:</strong> Demonstrated successful software approaches (vLLM paging, Direct Segments)</li>
+<li><strong>Chapter 15:</strong> Presented architectural alternatives (network, PIM, hybrid)</li>
+</ul>
+
+<p>The progression is clear: traditional MMU architecture breaks at AI scale (Ch 11-12), naive ML fixes fail (Ch 13), thoughtful software redesign helps (Ch 14), and architectural rethinking offers further improvements (Ch 15).</p>
+
+<h3 id="deployment-reality-check">Deployment Reality Check</h3>
+
+<p>Despite promising research results, none of these approaches are widely deployed as of 2026:</p>
+
+<ul>
+<li><strong>Network translation:</strong> Requires programmable switches (expensive, specialized)</li>
+<li><strong>PIM-TLB:</strong> Awaits PIM adoption (chicken-and-egg problem)</li>
+<li><strong>Utopia:</strong> Needs CPU vendor buy-in (ARM/RISC-V more likely than x86)</li>
+</ul>
+
+<p>The path to production likely involves:</p>
+
+<ol>
+<li><strong>2026-2028:</strong> Pilot deployments in specialized AI infrastructure</li>
+<li><strong>2028-2030:</strong> Broader adoption if cost/benefit proven</li>
+<li><strong>2030+:</strong> Potential standardization in next-generation architectures</li>
+</ol>
+
+<h3 id="lessons-for-system-designers">Lessons for System Designers</h3>
+
+<p><strong>Lesson 1: Question assumptions</strong></p>
+
+<p>For 50+ years, address translation happened at the processor. These approaches show that assumption isn't fundamental—it's just how we've always done it. At extreme scale, "the way we've always done it" may be the wrong way.</p>
+
+<p><strong>Lesson 2: Match mechanism to workload</strong></p>
+
+<p>There is no universal best translation architecture. Network translation excels for disaggregated memory with high sharing. PIM-TLB excels for in-memory computation. Utopia excels for mixed large/small allocations. Designers should choose based on workload characteristics.</p>
+
+<p><strong>Lesson 3: Hybrid approaches offer robustness</strong></p>
+
+<p>Pure approaches (all segments, all network translation, all PIM) risk pathological cases. Hybrid designs that combine mechanisms with automatic selection (like Utopia) handle diverse workloads more gracefully. The future likely involves multiple translation mechanisms coexisting.</p>
+
+<p><strong>Lesson 4: Software matters as much as hardware</strong></p>
+
+<p>Even brilliant hardware innovations fail without OS support. MIND needs network stack modifications. PIM-TLB needs PIM programming models. Utopia needs allocation heuristics. The most successful approaches (like vLLM in Chapter 14) often involve sophisticated software with minimal hardware changes.</p>
+
+<h3 id="open-questions">Open Questions</h3>
+
+<p>Several important questions remain unanswered:</p>
+
+<ol>
+<li><strong>Security implications:</strong> How do these alternatives affect isolation guarantees? Network translation centralizes trust. PIM-TLB distributes it. What are the attack surfaces?</li>
+
+<li><strong>Failure modes:</strong> When network switches or HBM logic layers fail, how does translation fail? Are failure modes acceptable?</li>
+
+<li><strong>Standardization:</strong> Will industry converge on one approach, or will we see vendor fragmentation?</li>
+
+<li><strong>Performance at extreme scale:</strong> Current evaluations test 8-512 devices. Do benefits hold at 10,000-100,000 devices?</li>
+
+<li><strong>Power efficiency:</strong> Translation overhead is not just latency—it's energy. Do these approaches improve FLOPS/Watt or just FLOPS?</li>
+</ol>
+
+<h3 id="looking-forward">Looking Forward</h3>
+
+<p>The approaches in this chapter are not science fiction—they're based on peer-reviewed research with demonstrated prototypes. But they're also not yet engineering reality in production systems. The question is not whether these approaches <em>work</em> (they do, in research settings) but whether they'll be <em>adopted</em>.</p>
+
+<p>Adoption depends on multiple factors:</p>
+
+<ul>
+<li><strong>Economic pressure:</strong> If AI workloads continue growing, the 40-80% overhead from traditional MMU (Chapter 12) becomes economically intolerable. This creates pressure for alternatives.</li>
+
+<li><strong>Vendor coordination:</strong> Network translation needs switch vendors and NIC vendors to collaborate. PIM-TLB needs memory vendors and processor vendors to coordinate. These cross-vendor dependencies are challenging.</li>
+
+<li><strong>Standards maturation:</strong> New architectures need specifications, validation suites, and ecosystem support. This takes years.</li>
+</ul>
+
+<p>Our prediction: by 2030, at least one of these approaches will be in production at scale, likely starting with specialized AI infrastructure before spreading to general-purpose systems. The traditional processor-centric MMU will remain dominant for general computing, but alternatives will emerge for workloads where translation overhead is intolerable.</p>
+
+<h3 id="final-thoughts">Final Thoughts</h3>
+
+<p>This book began in Chapter 1 with the basics of physical and virtual memory. We built understanding through page tables (Chapter 3), TLB architecture (Chapter 4), and advanced mechanisms (Chapters 5-10). We then examined how AI workloads break traditional assumptions (Chapters 11-12), why naive ML fixes fail (Chapter 13), how software redesign helps (Chapter 14), and finally, in this chapter, how architectural rethinking offers fundamental alternatives.</p>
+
+<p>The journey from "here's how MMU works" (Chapter 1) to "here's how we might rethink MMU entirely" (Chapter 15) reflects the broader evolution of computer architecture: as workloads change, architectures must adapt. The MMU of 2030 may look very different from the MMU of 1970—or even the MMU of 2020.</p>
+
+<p>Translation is too fundamental to computing to remain unchanged as we move into an era of trillion-parameter models, exascale clusters, and processing-in-memory. The alternatives presented in this chapter represent not just research ideas but potential paths forward for an architecture that must evolve to survive.</p>
+
+<hr>
+
+<h2 id="references">References</h2>
+
+<h3 id="network-level-translation-1">Network-Level Translation</h3>
+
+<ol>
+<li>Abhishek Bhattacharjee et al., "MIND: In-Network Memory Management for Disaggregated Data Centers," SOSP 2021.</li>
+<li>Hao Tang et al., "pulse: Accelerating Distributed Page Table Walks with Programmable NICs," ASPLOS 2025.</li>
+</ol>
+
+<h3 id="pim-tlb">PIM-TLB</h3>
+
+<ol start="3">
+<li>Fatima Adlat et al., "vPIM: Scalable Virtual Address Translation for Processing-in-Memory Architectures," DAC 2023.</li>
+<li>IMPRINT research team, "IMPRINT: In-Memory Page Translation Table for Processing-in-Memory," MEMSYS.</li>
+<li>NDPage research team, "Near-Data Page Tables for Processing Efficiency," arXiv preprint, February 2025 (NOT peer-reviewed).</li>
+<li>H2M2 research team, "Heterogeneous MMU with Dual Translation," arXiv preprint, April 2025 (NOT peer-reviewed).</li>
+</ol>
+
+<h3 id="utopia-hybrid">Utopia Hybrid</h3>
+
+<ol start="7">
+<li>Utopia research team, "Utopia: Automatic Hybrid Segmentation for Large Address Spaces," 2022.</li>
+</ol>
+
+<h3 id="related-work-from-previous-chapters">Related Work (from previous chapters)</h3>
+
+<ol start="8">
+<li>Jayneel Gandhi, Arkaprava Basu, Mark D. Hill, "Direct Segments for Near-Native Performance," ISCA 2013 (detailed in Chapter 14.4).</li>
+<li>Norman Jouppi et al., "TPU v4: Optically Reconfigurable Supercomputer," ISCA 2023 (discussed in Chapter 11.2).</li>
+<li>Xulong Tang et al., "GRIT: Scalable TLB Management for Multi-GPU Systems," HPCA 2024 (detailed in Chapter 12.2).</li>
+</ol>
+
+<p><em>Note: ArXiv preprints (items 5-6) are included for completeness but marked as NOT peer-reviewed. Readers should treat these claims with appropriate skepticism pending formal peer review.</em></p>
+
+</body>
+</html>
