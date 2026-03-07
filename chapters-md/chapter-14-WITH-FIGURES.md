@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::: {#title-block-header}
 # Chapter 14: Software-Managed Memory for AI Workloads {#chapter-14-software-managed-memory-for-ai-workloads .title}
 :::

@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: container
 ::: {#title-block-header}
 # Chapter 7: Page Faults and Exception Handling {#chapter-7-page-faults-and-exception-handling .title}

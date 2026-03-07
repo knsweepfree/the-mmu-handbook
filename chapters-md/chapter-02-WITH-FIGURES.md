@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::: {#title-block-header}
 # Chapter 2: Virtual Memory Concepts {#chapter-2-virtual-memory-concepts .title}
 :::

@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::: {#title-block-header}
 # Chapter 9: Advanced Page Table Optimizations {#chapter-9-advanced-page-table-optimizations .title}
 :::

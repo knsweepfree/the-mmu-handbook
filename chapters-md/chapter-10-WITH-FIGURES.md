@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::: {#title-block-header}
 # Chapter 10: Hardware Accelerators and External MMU Access {#chapter-10-hardware-accelerators-and-external-mmu-access .title}
 :::

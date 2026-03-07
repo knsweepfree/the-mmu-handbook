@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::: {#title-block-header}
 # Chapter 1: Memory Management Basics {#chapter-1-memory-management-basics .title}
 :::

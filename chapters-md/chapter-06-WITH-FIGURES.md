@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 # Chapter 6: Memory Protection and Access Control
 
 - [Chapter 6: Memory Protection and Access

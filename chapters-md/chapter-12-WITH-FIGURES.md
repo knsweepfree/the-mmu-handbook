@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::: container
 # Chapter 12: When MMU Architecture Breaks - AI at Scale {#chapter-12}
 

@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::: {#title-block-header}
 # Chapter 8: Advanced MMU Topics - System Integration and Optimization {#chapter-8-advanced-mmu-topics---system-integration-and-optimization .title}
 :::

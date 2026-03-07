@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: container
 ::: {#title-block-header}
 # Chapter 11: Virtual Memory Challenges in AI/ML Accelerators {#chapter-11-virtual-memory-challenges-in-aiml-accelerators .title}

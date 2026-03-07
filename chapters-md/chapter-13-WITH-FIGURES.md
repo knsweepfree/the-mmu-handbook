@@ -1,8 +1,3 @@
----
-nav_exclude: true
-sitemap: false
----
-
 ::::::: container
 ::: {#title-block-header}
 # Chapter 13: Machine Learning for Memory Management - The False Hope {#chapter-13-machine-learning-for-memory-management---the-false-hope .title}
