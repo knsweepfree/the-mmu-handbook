@@ -2282,7 +2282,9 @@ Workloads:
     html += '<div class="sb-ch' + (isCur?' active open':'') + '" data-c="' + ch.num + '">'
       + '<div class="sb-ch-head" onclick=\"sbChClick(' + ch.num + ',\'' + ch.file + '\')\">'
       + '<span class="sb-num">' + n + '</span>'
-      + '<a class="sb-ch-link" href="' + ch.file + '" onclick="event.stopPropagation()">' + ch.short + '</a>'
+      + (isCur
+        ? '<span class="sb-ch-link">' + ch.short + '</span>'
+        : '<a class="sb-ch-link" href="' + ch.file + '">' + ch.short + '</a>')
       + arrow + '</div>'
       + (toc ? '<div class="sb-toc">' + toc + '</div>' : '')
       + '</div>';
@@ -2357,9 +2359,17 @@ Workloads:
     var s = document.getElementById('sb');
     if (s.classList.contains('collapsed')) {
       location.href = file;
+      return;
+    }
+    var item = document.querySelector('.sb-ch[data-c="' + n + '"]');
+    if (!item) return;
+    if (item.classList.contains('active')) {
+      /* Current chapter — toggle expand/collapse in place */
+      item.classList.toggle('open');
     } else {
-      var item = document.querySelector('.sb-ch[data-c="' + n + '"]');
-      if (item) item.classList.toggle('open');
+      /* Different chapter — toggle its TOC preview, then navigate */
+      item.classList.toggle('open');
+      location.href = file;
     }
   };
   window.sbToggle = window.sbChClick;
@@ -4630,7 +4640,9 @@ Best of all approaches, selected automatically based on access pattern!
     html += '<div class="sb-ch' + (isCur?' active open':'') + '" data-c="' + ch.num + '">'
       + '<div class="sb-ch-head" onclick=\"sbChClick(' + ch.num + ',\'' + ch.file + '\')\">'
       + '<span class="sb-num">' + n + '</span>'
-      + '<a class="sb-ch-link" href="' + ch.file + '" onclick="event.stopPropagation()">' + ch.short + '</a>'
+      + (isCur
+        ? '<span class="sb-ch-link">' + ch.short + '</span>'
+        : '<a class="sb-ch-link" href="' + ch.file + '">' + ch.short + '</a>')
       + arrow + '</div>'
       + (toc ? '<div class="sb-toc">' + toc + '</div>' : '')
       + '</div>';
@@ -4705,9 +4717,17 @@ Best of all approaches, selected automatically based on access pattern!
     var s = document.getElementById('sb');
     if (s.classList.contains('collapsed')) {
       location.href = file;
+      return;
+    }
+    var item = document.querySelector('.sb-ch[data-c="' + n + '"]');
+    if (!item) return;
+    if (item.classList.contains('active')) {
+      /* Current chapter — toggle expand/collapse in place */
+      item.classList.toggle('open');
     } else {
-      var item = document.querySelector('.sb-ch[data-c="' + n + '"]');
-      if (item) item.classList.toggle('open');
+      /* Different chapter — toggle its TOC preview, then navigate */
+      item.classList.toggle('open');
+      location.href = file;
     }
   };
   window.sbToggle = window.sbChClick;

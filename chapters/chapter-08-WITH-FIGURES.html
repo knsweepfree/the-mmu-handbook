@@ -632,6 +632,22 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+  ol.references {
+    padding-left: 1.6em;
+    line-height: 1.7;
+  }
+  ol.references > li {
+    margin-bottom: 0.75em;
+    color: #333;
+  }
+  ol.references a {
+    color: #4A7BAC;
+    word-break: break-all;
+  }
+  ol.references a:hover {
+    text-decoration: underline;
+  }
 </style>
 <style>
         body {
@@ -4516,7 +4532,9 @@ Performance: Enterprise and the Cloud," 2nd Edition. Addison-Wesley,
     html += '<div class="sb-ch' + (isCur?' active open':'') + '" data-c="' + ch.num + '">'
       + '<div class="sb-ch-head" onclick=\"sbChClick(' + ch.num + ',\'' + ch.file + '\')\">'
       + '<span class="sb-num">' + n + '</span>'
-      + '<a class="sb-ch-link" href="' + ch.file + '" onclick="event.stopPropagation()">' + ch.short + '</a>'
+      + (isCur
+        ? '<span class="sb-ch-link">' + ch.short + '</span>'
+        : '<a class="sb-ch-link" href="' + ch.file + '">' + ch.short + '</a>')
       + arrow + '</div>'
       + (toc ? '<div class="sb-toc">' + toc + '</div>' : '')
       + '</div>';
@@ -4591,9 +4609,17 @@ Performance: Enterprise and the Cloud," 2nd Edition. Addison-Wesley,
     var s = document.getElementById('sb');
     if (s.classList.contains('collapsed')) {
       location.href = file;
+      return;
+    }
+    var item = document.querySelector('.sb-ch[data-c="' + n + '"]');
+    if (!item) return;
+    if (item.classList.contains('active')) {
+      /* Current chapter — toggle expand/collapse in place */
+      item.classList.toggle('open');
     } else {
-      var item = document.querySelector('.sb-ch[data-c="' + n + '"]');
-      if (item) item.classList.toggle('open');
+      /* Different chapter — toggle its TOC preview, then navigate */
+      item.classList.toggle('open');
+      location.href = file;
     }
   };
   window.sbToggle = window.sbChClick;
@@ -4602,19 +4628,34 @@ Performance: Enterprise and the Cloud," 2nd Edition. Addison-Wesley,
 </script>
 
 <h2 id="references">References</h2>
-<ol>
-<li>Denning, P.J. "Virtual Memory." <em>ACM Computing Surveys</em>, 2(3), 153–189, 1970. DOI: 10.1145/356571.356573</li>
-<li>Corb&#x00e2;to, F.J. "A Paging Experiment with the Multics System." <em>MIT Project MAC Report MAC-M-384</em>. MIT, 1968.</li>
-<li>Adams, K. and Agesen, O. "A Comparison of Software and Hardware Techniques for x86 Virtualization." <em>12th International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2006)</em>. ACM, 2006. DOI: 10.1145/1168857.1168860</li>
-<li>Zhao, Y. "Multi-Gen LRU." Linux kernel mailing list patches. Merged in Linux 6.1, 2022. https://lore.kernel.org/lkml/20220918080010.2920238-1-yuzhao@google.com/</li>
-<li>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3</em>. Intel Corporation, 2023.</li>
-<li>ARM Limited. <em>ARM Architecture Reference Manual, ARMv8-A</em>. ARM Limited, 2023.</li>
-<li>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. RISC-V International, 2021.</li>
-<li>Linux Kernel source (v6.8). <em>mm/vmscan.c, mm/oom_kill.c, mm/huge_memory.c</em>. https://elixir.bootlin.com/linux/v6.8/source/mm</li>
-<li>Arcangeli, A. "Transparent Huge Pages." Linux kernel documentation, 2011. https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html</li>
-<li>Gregg, B. <em>Systems Performance: Enterprise and the Cloud</em>, 2nd Edition. Addison-Wesley, 2020. ISBN: 978-0-13-682015-4.</li>
-<li>Megiddo, N. and Modha, D.S. "ARC: A Self-Tuning, Low Overhead Replacement Cache." <em>2nd USENIX Conference on File and Storage Technologies (FAST 2003)</em>. USENIX, 2003.</li>
-<li>Johnson, T. and Shasha, D. "2Q: A Low Overhead High Performance Buffer Management Replacement Algorithm." <em>20th International Conference on Very Large Data Bases (VLDB 1994)</em>. Morgan Kaufmann, 1994.</li>
+<ol class="references">
+<li>Denning, P.J. "Virtual Memory." <em>ACM Computing Surveys</em>, 2(3):153–189, 1970.
+  <a href="https://doi.org/10.1145/356571.356573" target="_blank" rel="noopener">DOI: 10.1145/356571.356573</a></li>
+<li>Corbat&oacute;, F.J. "A Paging Experiment with the Multics System." <em>MIT Project MAC Report MAC-M-384</em>. MIT, 1968.</li>
+<li>Adams, K. and Agesen, O. "A Comparison of Software and Hardware Techniques for x86 Virtualization."
+  <em>Proc. 12th Int'l Conf. on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2006)</em>.
+  ACM, 2006. <a href="https://doi.org/10.1145/1168857.1168860" target="_blank" rel="noopener">DOI: 10.1145/1168857.1168860</a></li>
+<li>Zhao, Y. "Multi-Gen LRU." Linux kernel mailing list, 2022. Merged in Linux 6.1.
+  <a href="https://lore.kernel.org/lkml/20220918080010.2920238-1-yuzhao@google.com/" target="_blank" rel="noopener">lore.kernel.org</a></li>
+<li>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer&#39;s Manual, Volume 3A: System Programming Guide</em>.
+  Intel Corporation, 2023.
+  <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></li>
+<li>Arm Limited. <em>Arm Architecture Reference Manual for A-profile Architecture</em>. Arm Limited, 2023.
+  <a href="https://developer.arm.com/documentation/ddi0487/latest" target="_blank" rel="noopener">developer.arm.com</a></li>
+<li>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>, v20211203.
+  RISC-V International, 2021.
+  <a href="https://github.com/riscv/riscv-isa-manual/releases/latest" target="_blank" rel="noopener">github.com/riscv/riscv-isa-manual</a></li>
+<li>Linux Kernel Contributors. <em>mm/vmscan.c, mm/oom_kill.c, mm/huge_memory.c</em>. Linux kernel v6.8, 2024.
+  <a href="https://elixir.bootlin.com/linux/v6.8/source/mm" target="_blank" rel="noopener">elixir.bootlin.com/linux/v6.8/source/mm</a></li>
+<li>Arcangeli, A. "Transparent Huge Pages." <em>Linux Kernel Documentation</em>, 2011.
+  <a href="https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html" target="_blank" rel="noopener">kernel.org/doc/…/transhuge.html</a></li>
+<li>Gregg, B. <em>Systems Performance: Enterprise and the Cloud</em>, 2nd ed. Addison-Wesley, 2020.
+  ISBN: 978-0-13-682015-4.</li>
+<li>Megiddo, N. and Modha, D.S. "ARC: A Self-Tuning, Low Overhead Replacement Cache."
+  <em>Proc. 2nd USENIX Conf. on File and Storage Technologies (FAST&#8201;'03)</em>. USENIX, 2003.
+  <a href="https://www.usenix.org/legacy/events/fast03/tech/full_papers/megiddo/megiddo.pdf" target="_blank" rel="noopener">PDF</a></li>
+<li>Johnson, T. and Shasha, D. "2Q: A Low Overhead High Performance Buffer Management Replacement Algorithm."
+  <em>Proc. 20th Int'l Conf. on Very Large Data Bases (VLDB 1994)</em>. Morgan Kaufmann, 1994.</li>
 </ol>
 
 </body>
