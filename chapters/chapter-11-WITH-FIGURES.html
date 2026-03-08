@@ -902,237 +902,126 @@ Accelerators</h1>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#chapter-11-virtual-memory-in-aiml-accelerators"
-id="toc-chapter-11-virtual-memory-in-aiml-accelerators">Chapter 11:
-Virtual Memory in AI/ML Accelerators</a>
-<ul>
-<li><a href="#introduction-scale-changes-everything"
-id="toc-introduction-scale-changes-everything">11.1 Introduction: Scale
-Changes Everything</a>
-<ul>
-<li><a href="#from-architecture-to-operation-what-chapter-4-established"
-id="toc-from-architecture-to-operation-what-chapter-4-established">From
-Architecture to Operation: What Chapter 4 Established</a></li>
-<li><a
-href="#the-three-approaches-to-virtual-memory-in-aiml-accelerators"
-id="toc-the-three-approaches-to-virtual-memory-in-aiml-accelerators">The
-Three Approaches to Virtual Memory in AI/ML Accelerators</a></li>
-<li><a href="#the-scale-problem-why-aiml-stresses-mmus-differently"
-id="toc-the-scale-problem-why-aiml-stresses-mmus-differently">The Scale
-Problem: Why AI/ML Stresses MMUs Differently</a></li>
-<li><a href="#what-this-chapter-covers"
-id="toc-what-this-chapter-covers">What This Chapter Covers</a></li>
-<li><a href="#why-these-mechanisms-matter"
-id="toc-why-these-mechanisms-matter">Why These Mechanisms
-Matter</a></li>
-<li><a href="#relationship-to-previous-chapters"
-id="toc-relationship-to-previous-chapters">Relationship to Previous
-Chapters</a></li>
-<li><a href="#looking-forward" id="toc-looking-forward">Looking
-Forward</a></li>
-<li><a href="#why-systolic-arrays-demand-predictable-memory-access"
-id="toc-why-systolic-arrays-demand-predictable-memory-access">Why
-Systolic Arrays Demand Predictable Memory Access</a></li>
-<li><a href="#static-memory-layout-via-xla-compiler"
-id="toc-static-memory-layout-via-xla-compiler">Static Memory Layout via
-XLA Compiler</a></li>
-<li><a href="#software-managed-isolation-without-page-tables"
-id="toc-software-managed-isolation-without-page-tables">Software-Managed
-Isolation Without Page Tables</a></li>
-<li><a href="#the-efficiency-payoff-compute-to-bandwidth-ratios"
-id="toc-the-efficiency-payoff-compute-to-bandwidth-ratios">The
-Efficiency Payoff: Compute-to-Bandwidth Ratios</a></li>
-<li><a href="#why-tpu-v4-and-v5-added-virtual-memory"
-id="toc-why-tpu-v4-and-v5-added-virtual-memory">Why TPU v4 and v5 Added
-Virtual Memory</a></li>
-<li><a href="#the-limited-mmu-approach"
-id="toc-the-limited-mmu-approach">The Limited MMU Approach</a></li>
-<li><a href="#lessons-for-accelerator-design"
-id="toc-lessons-for-accelerator-design">Lessons for Accelerator
-Design</a></li>
-<li><a href="#anatomy-of-a-page-fault-storm"
-id="toc-anatomy-of-a-page-fault-storm">Anatomy of a Page Fault
-Storm</a></li>
-<li><a href="#migration-thrashing-the-ping-pong-problem"
-id="toc-migration-thrashing-the-ping-pong-problem">Migration Thrashing:
-The Ping-Pong Problem</a></li>
-<li><a href="#mitigation-strategy-1-prefetching"
-id="toc-mitigation-strategy-1-prefetching">Mitigation Strategy 1:
-Prefetching</a></li>
-<li><a href="#mitigation-strategy-2-pinning-critical-structures"
-id="toc-mitigation-strategy-2-pinning-critical-structures">Mitigation
-Strategy 2: Pinning Critical Structures</a></li>
-<li><a href="#mitigation-strategy-3-cudamemadvise-for-access-patterns"
-id="toc-mitigation-strategy-3-cudamemadvise-for-access-patterns">Mitigation
-Strategy 3: cudaMemAdvise for Access Patterns</a></li>
-<li><a href="#mitigation-strategy-4-structuring-the-training-loop"
-id="toc-mitigation-strategy-4-structuring-the-training-loop">Mitigation
-Strategy 4: Structuring the Training Loop</a></li>
-<li><a href="#real-world-case-study-stable-diffusion-inference"
-id="toc-real-world-case-study-stable-diffusion-inference">Real-World
-Case Study: Stable Diffusion Inference</a></li>
-<li><a href="#summary-page-fault-mitigation-principles"
-id="toc-summary-page-fault-mitigation-principles">Summary: Page Fault
-Mitigation Principles</a></li>
-<li><a
-href="#the-scale-problem-why-multi-gpu-tlb-invalidation-differs-from-multi-core"
-id="toc-the-scale-problem-why-multi-gpu-tlb-invalidation-differs-from-multi-core">The
-Scale Problem: Why Multi-GPU TLB Invalidation Differs from
-Multi-Core</a></li>
-<li><a href="#naive-approach-serial-tlb-invalidation"
-id="toc-naive-approach-serial-tlb-invalidation">Naive Approach: Serial
-TLB Invalidation</a></li>
-<li><a href="#nvswitch-hardware-accelerated-tlb-broadcast"
-id="toc-nvswitch-hardware-accelerated-tlb-broadcast">NVSwitch:
-Hardware-Accelerated TLB Broadcast</a></li>
-<li><a href="#multi-server-coordination-combining-nvswitch-and-rdma"
-id="toc-multi-server-coordination-combining-nvswitch-and-rdma">Multi-Server
-Coordination: Combining NVSwitch and RDMA</a></li>
-<li><a
-href="#nccl-integration-gradient-synchronization-and-tlb-coherency"
-id="toc-nccl-integration-gradient-synchronization-and-tlb-coherency">NCCL
-Integration: Gradient Synchronization and TLB Coherency</a></li>
-<li><a href="#production-measurements-real-systems-at-scale"
-id="toc-production-measurements-real-systems-at-scale">Production
-Measurements: Real Systems at Scale</a></li>
-<li><a href="#protocol-design-ensuring-correctness"
-id="toc-protocol-design-ensuring-correctness">Protocol Design: Ensuring
-Correctness</a></li>
-<li><a href="#when-multi-gpu-tlb-synchronization-breaks-down"
-id="toc-when-multi-gpu-tlb-synchronization-breaks-down">When Multi-GPU
-TLB Synchronization Breaks Down</a></li>
-<li><a href="#summary-multi-gpu-tlb-synchronization-principles"
-id="toc-summary-multi-gpu-tlb-synchronization-principles">Summary:
-Multi-GPU TLB Synchronization Principles</a></li>
-<li><a href="#the-tlb-coverage-calculation"
-id="toc-the-tlb-coverage-calculation">The TLB Coverage
-Calculation</a></li>
-<li><a href="#why-1-gb-pages-arent-always-optimal"
-id="toc-why-1-gb-pages-arent-always-optimal">Why 1 GB Pages Aren't
-Always Optimal</a></li>
-<li><a href="#decision-framework-page-size-by-tensor-type"
-id="toc-decision-framework-page-size-by-tensor-type">Decision Framework:
-Page Size by Tensor Type</a></li>
-<li><a href="#measured-performance-page-size-impact-on-real-models"
-id="toc-measured-performance-page-size-impact-on-real-models">Measured
-Performance: Page Size Impact on Real Models</a></li>
-<li><a href="#linux-huge-page-configuration"
-id="toc-linux-huge-page-configuration">Linux Huge Page
-Configuration</a></li>
-<li><a href="#summary-page-size-decision-tree"
-id="toc-summary-page-size-decision-tree">Summary: Page Size Decision
-Tree</a></li>
-<li><a href="#the-chiplet-architecture-challenge"
-id="toc-the-chiplet-architecture-challenge">The Chiplet Architecture
-Challenge</a></li>
-<li><a href="#two-architectural-approaches"
-id="toc-two-architectural-approaches">Two Architectural
-Approaches</a></li>
-<li><a href="#tlb-hierarchy-in-mi300x"
-id="toc-tlb-hierarchy-in-mi300x">TLB Hierarchy in MI300X</a></li>
-<li><a href="#infinity-fabric-tlb-coherency-protocol"
-id="toc-infinity-fabric-tlb-coherency-protocol">Infinity Fabric TLB
-Coherency Protocol</a></li>
-<li><a href="#tlb-coverage-for-192-gb-address-space"
-id="toc-tlb-coverage-for-192-gb-address-space">TLB Coverage for 192 GB
-Address Space</a></li>
-<li><a href="#practical-configuration-fitting-llama-70b-on-mi300x"
-id="toc-practical-configuration-fitting-llama-70b-on-mi300x">Practical
-Configuration: Fitting LLaMA 70B on MI300X</a></li>
-<li><a href="#comparison-mi300x-vs-h100-for-large-models"
-id="toc-comparison-mi300x-vs-h100-for-large-models">Comparison: MI300X
-vs H100 for Large Models</a></li>
-<li><a href="#summary-mi300x-tlb-architecture-insights"
-id="toc-summary-mi300x-tlb-architecture-insights">Summary: MI300X TLB
-Architecture Insights</a></li>
-<li><a href="#the-integration-challenge"
-id="toc-the-integration-challenge">The Integration Challenge</a></li>
-<li><a href="#mmu-sharing-address-translation-services-ats"
-id="toc-mmu-sharing-address-translation-services-ats">MMU Sharing:
-Address Translation Services (ATS)</a></li>
-<li><a href="#cache-coherency-challenge"
-id="toc-cache-coherency-challenge">Cache Coherency Challenge</a></li>
-<li><a href="#software-solution-explicit-cache-flush"
-id="toc-software-solution-explicit-cache-flush">Software Solution:
-Explicit Cache Flush</a></li>
-<li><a href="#gaudis-optimized-approach-compiler-managed-coherency"
-id="toc-gaudis-optimized-approach-compiler-managed-coherency">Gaudi's
-Optimized Approach: Compiler-Managed Coherency</a></li>
-<li><a href="#all-reduce-performance-gaudi-vs-nvlink"
-id="toc-all-reduce-performance-gaudi-vs-nvlink">All-Reduce Performance:
-Gaudi vs NVLink</a></li>
-<li><a href="#tlb-considerations-for-rdma"
-id="toc-tlb-considerations-for-rdma">TLB Considerations for
-RDMA</a></li>
-<li><a href="#summary-habana-gaudi-2-mmu-insights"
-id="toc-summary-habana-gaudi-2-mmu-insights">Summary: Habana Gaudi 2 MMU
-Insights</a></li>
-<li><a href="#bandwidth-arbitration-across-three-device-types"
-id="toc-bandwidth-arbitration-across-three-device-types">Bandwidth
-Arbitration Across Three Device Types</a></li>
-<li><a href="#tlb-coherency-across-cpu-gpu-and-neural-engine"
-id="toc-tlb-coherency-across-cpu-gpu-and-neural-engine">TLB Coherency
-Across CPU, GPU, and Neural Engine</a></li>
-<li><a href="#when-unified-memory-wins-sequential-access-patterns"
-id="toc-when-unified-memory-wins-sequential-access-patterns">When
-Unified Memory Wins: Sequential Access Patterns</a></li>
-<li><a href="#when-unified-memory-loses-concurrent-access-patterns"
-id="toc-when-unified-memory-loses-concurrent-access-patterns">When
-Unified Memory Loses: Concurrent Access Patterns</a></li>
-<li><a href="#page-size-selection-for-m-series-unified-memory"
-id="toc-page-size-selection-for-m-series-unified-memory">Page Size
-Selection for M-series Unified Memory</a></li>
-<li><a href="#practical-implications-for-m-series-development"
-id="toc-practical-implications-for-m-series-development">Practical
-Implications for M-Series Development</a></li>
-<li><a href="#pitfall-1-training-without-prefetching-page-fault-storms"
-id="toc-pitfall-1-training-without-prefetching-page-fault-storms">Pitfall
-1: Training Without Prefetching (Page Fault Storms)</a></li>
-<li><a href="#pitfall-2-using-4kb-pages-for-large-models-tlb-thrashing"
-id="toc-pitfall-2-using-4kb-pages-for-large-models-tlb-thrashing">Pitfall
-2: Using 4KB Pages for Large Models (TLB Thrashing)</a></li>
-<li><a href="#pitfall-3-ignoring-multi-gpu-tlb-synchronization-overhead"
-id="toc-pitfall-3-ignoring-multi-gpu-tlb-synchronization-overhead">Pitfall
-3: Ignoring Multi-GPU TLB Synchronization Overhead</a></li>
-<li><a href="#pitfall-4-page-migration-thrashing-cpugpu-ping-pong"
-id="toc-pitfall-4-page-migration-thrashing-cpugpu-ping-pong">Pitfall 4:
-Page Migration Thrashing (CPU↔︎GPU Ping-Pong)</a></li>
-<li><a href="#pitfall-5-assuming-cache-coherency-exists-stale-dma-reads"
-id="toc-pitfall-5-assuming-cache-coherency-exists-stale-dma-reads">Pitfall
-5: Assuming Cache Coherency Exists (Stale DMA Reads)</a></li>
-<li><a href="#pitfall-6-over-committing-unified-memory-bandwidth"
-id="toc-pitfall-6-over-committing-unified-memory-bandwidth">Pitfall 6:
-Over-Committing Unified Memory Bandwidth</a></li>
-</ul></li>
-<li><a href="#references" id="toc-references">References</a>
-<ul>
-<li><a href="#gpu-mmu-architecture-and-virtual-memory"
-id="toc-gpu-mmu-architecture-and-virtual-memory">GPU MMU Architecture
-and Virtual Memory</a></li>
-<li><a href="#google-tpu-architecture"
-id="toc-google-tpu-architecture">Google TPU Architecture</a></li>
-<li><a href="#multi-gpu-coordination-and-scaling"
-id="toc-multi-gpu-coordination-and-scaling">Multi-GPU Coordination and
-Scaling</a></li>
-<li><a href="#amd-mi300x-and-chiplet-architectures"
-id="toc-amd-mi300x-and-chiplet-architectures">AMD MI300X and Chiplet
-Architectures</a></li>
-<li><a href="#intel-habana-gaudi" id="toc-intel-habana-gaudi">Intel
-Habana Gaudi</a></li>
-<li><a href="#apple-neural-engine-and-unified-memory"
-id="toc-apple-neural-engine-and-unified-memory">Apple Neural Engine and
-Unified Memory</a></li>
-<li><a href="#page-fault-handling-and-prefetching"
-id="toc-page-fault-handling-and-prefetching">Page Fault Handling and
-Prefetching</a></li>
-<li><a href="#tlb-optimization" id="toc-tlb-optimization">TLB
-Optimization</a></li>
-<li><a href="#performance-analysis-tools"
-id="toc-performance-analysis-tools">Performance Analysis Tools</a></li>
-<li><a href="#hardware-specifications"
-id="toc-hardware-specifications">Hardware Specifications</a></li>
-</ul></li>
-</ul></li>
+  <li><a href="#chapter-11-virtual-memory-in-aiml-accelerators" id="toc-chapter-11-virtual-memory-in-aiml-accelerators">Chapter 11: Virtual Memory in AI/ML Accelerators</a>
+  <ul>
+    <li><a href="#introduction-scale-changes-everything" id="toc-introduction-scale-changes-everything">11.1 Introduction: Scale Changes Everything</a>
+    <ul>
+      <li><a href="#from-architecture-to-operation-what-chapter-4-established" id="toc-from-architecture-to-operation-what-chapter-4-established">From Architecture to Operation: What Chapter 4 Established</a></li>
+      <li><a href="#the-three-approaches-to-virtual-memory-in-aiml-accelerators" id="toc-the-three-approaches-to-virtual-memory-in-aiml-accelerators">The Three Approaches to Virtual Memory in AI/ML Accelerators</a></li>
+      <li><a href="#the-scale-problem-why-aiml-stresses-mmus-differently" id="toc-the-scale-problem-why-aiml-stresses-mmus-differently">The Scale Problem: Why AI/ML Stresses MMUs Differently</a></li>
+      <li><a href="#what-this-chapter-covers" id="toc-what-this-chapter-covers">What This Chapter Covers</a></li>
+      <li><a href="#why-these-mechanisms-matter" id="toc-why-these-mechanisms-matter">Why These Mechanisms Matter</a></li>
+      <li><a href="#relationship-to-previous-chapters" id="toc-relationship-to-previous-chapters">Relationship to Previous Chapters</a></li>
+      <li><a href="#looking-forward" id="toc-looking-forward">Looking Forward</a></li>
+    </ul>
+    </li>
+    <li><a href="#section-11.2" id="toc-section-11.2">11.2 Google TPU: Compiler-Managed Memory</a>
+    <ul>
+      <li><a href="#why-systolic-arrays-demand-predictable-memory-access" id="toc-why-systolic-arrays-demand-predictable-memory-access">Why Systolic Arrays Demand Predictable Memory Access</a></li>
+      <li><a href="#static-memory-layout-via-xla-compiler" id="toc-static-memory-layout-via-xla-compiler">Static Memory Layout via XLA Compiler</a></li>
+      <li><a href="#software-managed-isolation-without-page-tables" id="toc-software-managed-isolation-without-page-tables">Software-Managed Isolation Without Page Tables</a></li>
+      <li><a href="#the-efficiency-payoff-compute-to-bandwidth-ratios" id="toc-the-efficiency-payoff-compute-to-bandwidth-ratios">The Efficiency Payoff: Compute-to-Bandwidth Ratios</a></li>
+      <li><a href="#why-tpu-v4-and-v5-added-virtual-memory" id="toc-why-tpu-v4-and-v5-added-virtual-memory">Why TPU v4 and v5 Added Virtual Memory</a></li>
+      <li><a href="#the-limited-mmu-approach" id="toc-the-limited-mmu-approach">The Limited MMU Approach</a></li>
+      <li><a href="#lessons-for-accelerator-design" id="toc-lessons-for-accelerator-design">Lessons for Accelerator Design</a></li>
+    </ul>
+    </li>
+    <li><a href="#section-11.3" id="toc-section-11.3">11.3 NVIDIA GPU Unified Virtual Memory</a>
+    <ul>
+      <li><a href="#anatomy-of-a-page-fault-storm" id="toc-anatomy-of-a-page-fault-storm">Anatomy of a Page Fault Storm</a></li>
+      <li><a href="#migration-thrashing-the-ping-pong-problem" id="toc-migration-thrashing-the-ping-pong-problem">Migration Thrashing: The Ping-Pong Problem</a></li>
+      <li><a href="#mitigation-strategy-1-prefetching" id="toc-mitigation-strategy-1-prefetching">Mitigation Strategy 1: Prefetching</a></li>
+      <li><a href="#mitigation-strategy-2-pinning-critical-structures" id="toc-mitigation-strategy-2-pinning-critical-structures">Mitigation Strategy 2: Pinning Critical Structures</a></li>
+      <li><a href="#mitigation-strategy-3-cudamemadvise-for-access-patterns" id="toc-mitigation-strategy-3-cudamemadvise-for-access-patterns">Mitigation Strategy 3: cudaMemAdvise for Access Patterns</a></li>
+      <li><a href="#mitigation-strategy-4-structuring-the-training-loop" id="toc-mitigation-strategy-4-structuring-the-training-loop">Mitigation Strategy 4: Structuring the Training Loop</a></li>
+      <li><a href="#real-world-case-study-stable-diffusion-inference" id="toc-real-world-case-study-stable-diffusion-inference">Real-World Case Study: Stable Diffusion Inference</a></li>
+      <li><a href="#summary-page-fault-mitigation-principles" id="toc-summary-page-fault-mitigation-principles">Summary: Page Fault Mitigation Principles</a></li>
+    </ul>
+    </li>
+    <li><a href="#section-11.4" id="toc-section-11.4">11.4 Multi-GPU TLB Synchronization: NVLink and NVSwitch</a>
+    <ul>
+      <li><a href="#the-scale-problem-why-multi-gpu-tlb-invalidation-differs-from-multi-core" id="toc-the-scale-problem-why-multi-gpu-tlb-invalidation-differs-from-multi-core">The Scale Problem: Why Multi-GPU TLB Invalidation Differs from Multi-Core</a></li>
+      <li><a href="#naive-approach-serial-tlb-invalidation" id="toc-naive-approach-serial-tlb-invalidation">Naive Approach: Serial TLB Invalidation</a></li>
+      <li><a href="#nvswitch-hardware-accelerated-tlb-broadcast" id="toc-nvswitch-hardware-accelerated-tlb-broadcast">NVSwitch: Hardware-Accelerated TLB Broadcast</a></li>
+      <li><a href="#multi-server-coordination-combining-nvswitch-and-rdma" id="toc-multi-server-coordination-combining-nvswitch-and-rdma">Multi-Server Coordination: Combining NVSwitch and RDMA</a></li>
+      <li><a href="#nccl-integration-gradient-synchronization-and-tlb-coherency" id="toc-nccl-integration-gradient-synchronization-and-tlb-coherency">NCCL Integration: Gradient Synchronization and TLB Coherency</a></li>
+      <li><a href="#production-measurements-real-systems-at-scale" id="toc-production-measurements-real-systems-at-scale">Production Measurements: Real Systems at Scale</a></li>
+      <li><a href="#protocol-design-ensuring-correctness" id="toc-protocol-design-ensuring-correctness">Protocol Design: Ensuring Correctness</a></li>
+      <li><a href="#when-multi-gpu-tlb-synchronization-breaks-down" id="toc-when-multi-gpu-tlb-synchronization-breaks-down">When Multi-GPU TLB Synchronization Breaks Down</a></li>
+      <li><a href="#summary-multi-gpu-tlb-synchronization-principles" id="toc-summary-multi-gpu-tlb-synchronization-principles">Summary: Multi-GPU TLB Synchronization Principles</a></li>
+    </ul>
+    </li>
+    <li><a href="#section-11.5" id="toc-section-11.5">11.5 Page Size Strategy for AI Workloads</a>
+    <ul>
+      <li><a href="#the-tlb-coverage-calculation" id="toc-the-tlb-coverage-calculation">The TLB Coverage Calculation</a></li>
+      <li><a href="#why-1-gb-pages-arent-always-optimal" id="toc-why-1-gb-pages-arent-always-optimal">Why 1 GB Pages Aren&#x27;t Always Optimal</a></li>
+      <li><a href="#decision-framework-page-size-by-tensor-type" id="toc-decision-framework-page-size-by-tensor-type">Decision Framework: Page Size by Tensor Type</a></li>
+      <li><a href="#measured-performance-page-size-impact-on-real-models" id="toc-measured-performance-page-size-impact-on-real-models">Measured Performance: Page Size Impact on Real Models</a></li>
+      <li><a href="#linux-huge-page-configuration" id="toc-linux-huge-page-configuration">Linux Huge Page Configuration</a></li>
+      <li><a href="#summary-page-size-decision-tree" id="toc-summary-page-size-decision-tree">Summary: Page Size Decision Tree</a></li>
+    </ul>
+    </li>
+    <li><a href="#section-11.6" id="toc-section-11.6">11.6 AMD MI300X: Chiplet Architecture and Unified Memory</a>
+    <ul>
+      <li><a href="#the-chiplet-architecture-challenge" id="toc-the-chiplet-architecture-challenge">The Chiplet Architecture Challenge</a></li>
+      <li><a href="#two-architectural-approaches" id="toc-two-architectural-approaches">Two Architectural Approaches</a></li>
+      <li><a href="#tlb-hierarchy-in-mi300x" id="toc-tlb-hierarchy-in-mi300x">TLB Hierarchy in MI300X</a></li>
+      <li><a href="#infinity-fabric-tlb-coherency-protocol" id="toc-infinity-fabric-tlb-coherency-protocol">Infinity Fabric TLB Coherency Protocol</a></li>
+      <li><a href="#tlb-coverage-for-192-gb-address-space" id="toc-tlb-coverage-for-192-gb-address-space">TLB Coverage for 192 GB Address Space</a></li>
+      <li><a href="#practical-configuration-fitting-llama-70b-on-mi300x" id="toc-practical-configuration-fitting-llama-70b-on-mi300x">Practical Configuration: Fitting LLaMA 70B on MI300X</a></li>
+      <li><a href="#comparison-mi300x-vs-h100-for-large-models" id="toc-comparison-mi300x-vs-h100-for-large-models">Comparison: MI300X vs H100 for Large Models</a></li>
+      <li><a href="#summary-mi300x-tlb-architecture-insights" id="toc-summary-mi300x-tlb-architecture-insights">Summary: MI300X TLB Architecture Insights</a></li>
+    </ul>
+    </li>
+    <li><a href="#section-11.7" id="toc-section-11.7">11.7 Intel Gaudi 2 and RDMA Integration</a>
+    <ul>
+      <li><a href="#the-integration-challenge" id="toc-the-integration-challenge">The Integration Challenge</a></li>
+      <li><a href="#mmu-sharing-address-translation-services-ats" id="toc-mmu-sharing-address-translation-services-ats">MMU Sharing: Address Translation Services (ATS)</a></li>
+      <li><a href="#cache-coherency-challenge" id="toc-cache-coherency-challenge">Cache Coherency Challenge</a></li>
+      <li><a href="#software-solution-explicit-cache-flush" id="toc-software-solution-explicit-cache-flush">Software Solution: Explicit Cache Flush</a></li>
+      <li><a href="#gaudis-optimized-approach-compiler-managed-coherency" id="toc-gaudis-optimized-approach-compiler-managed-coherency">Gaudi&#x27;s Optimized Approach: Compiler-Managed Coherency</a></li>
+      <li><a href="#all-reduce-performance-gaudi-vs-nvlink" id="toc-all-reduce-performance-gaudi-vs-nvlink">All-Reduce Performance: Gaudi vs NVLink</a></li>
+      <li><a href="#tlb-considerations-for-rdma" id="toc-tlb-considerations-for-rdma">TLB Considerations for RDMA</a></li>
+      <li><a href="#summary-habana-gaudi-2-mmu-insights" id="toc-summary-habana-gaudi-2-mmu-insights">Summary: Habana Gaudi 2 MMU Insights</a></li>
+    </ul>
+    </li>
+    <li><a href="#section-11.8" id="toc-section-11.8">11.8 Apple M-Series Unified Memory Architecture</a>
+    <ul>
+      <li><a href="#bandwidth-arbitration-across-three-device-types" id="toc-bandwidth-arbitration-across-three-device-types">Bandwidth Arbitration Across Three Device Types</a></li>
+      <li><a href="#tlb-coherency-across-cpu-gpu-and-neural-engine" id="toc-tlb-coherency-across-cpu-gpu-and-neural-engine">TLB Coherency Across CPU, GPU, and Neural Engine</a></li>
+      <li><a href="#when-unified-memory-wins-sequential-access-patterns" id="toc-when-unified-memory-wins-sequential-access-patterns">When Unified Memory Wins: Sequential Access Patterns</a></li>
+      <li><a href="#when-unified-memory-loses-concurrent-access-patterns" id="toc-when-unified-memory-loses-concurrent-access-patterns">When Unified Memory Loses: Concurrent Access Patterns</a></li>
+      <li><a href="#page-size-selection-for-m-series-unified-memory" id="toc-page-size-selection-for-m-series-unified-memory">Page Size Selection for M-series Unified Memory</a></li>
+      <li><a href="#practical-implications-for-m-series-development" id="toc-practical-implications-for-m-series-development">Practical Implications for M-Series Development</a></li>
+    </ul>
+    </li>
+    <li><a href="#section-11.9" id="toc-section-11.9">11.9 Common Pitfalls and Production Best Practices</a>
+    <ul>
+      <li><a href="#pitfall-1-training-without-prefetching-page-fault-storms" id="toc-pitfall-1-training-without-prefetching-page-fault-storms">Pitfall 1: Training Without Prefetching (Page Fault Storms)</a></li>
+      <li><a href="#pitfall-2-using-4kb-pages-for-large-models-tlb-thrashing" id="toc-pitfall-2-using-4kb-pages-for-large-models-tlb-thrashing">Pitfall 2: Using 4KB Pages for Large Models (TLB Thrashing)</a></li>
+      <li><a href="#pitfall-3-ignoring-multi-gpu-tlb-synchronization-overhead" id="toc-pitfall-3-ignoring-multi-gpu-tlb-synchronization-overhead">Pitfall 3: Ignoring Multi-GPU TLB Synchronization Overhead</a></li>
+      <li><a href="#pitfall-4-page-migration-thrashing-cpugpu-ping-pong" id="toc-pitfall-4-page-migration-thrashing-cpugpu-ping-pong">Pitfall 4: Page Migration Thrashing (CPU↔︎GPU Ping-Pong)</a></li>
+      <li><a href="#pitfall-5-assuming-cache-coherency-exists-stale-dma-reads" id="toc-pitfall-5-assuming-cache-coherency-exists-stale-dma-reads">Pitfall 5: Assuming Cache Coherency Exists (Stale DMA Reads)</a></li>
+      <li><a href="#pitfall-6-over-committing-unified-memory-bandwidth" id="toc-pitfall-6-over-committing-unified-memory-bandwidth">Pitfall 6: Over-Committing Unified Memory Bandwidth</a></li>
+    </ul>
+    </li>
+    <li><a href="#chapter-11-summary" id="toc-chapter-11-summary">11.10 Chapter Summary</a></li>
+    <li><a href="#references" id="toc-references">References</a>
+    <ul>
+      <li><a href="#gpu-mmu-architecture-and-virtual-memory" id="toc-gpu-mmu-architecture-and-virtual-memory">GPU MMU Architecture and Virtual Memory</a></li>
+      <li><a href="#google-tpu-architecture" id="toc-google-tpu-architecture">Google TPU Architecture</a></li>
+      <li><a href="#multi-gpu-coordination-and-scaling" id="toc-multi-gpu-coordination-and-scaling">Multi-GPU Coordination and Scaling</a></li>
+      <li><a href="#amd-mi300x-and-chiplet-architectures" id="toc-amd-mi300x-and-chiplet-architectures">AMD MI300X and Chiplet Architectures</a></li>
+      <li><a href="#intel-habana-gaudi" id="toc-intel-habana-gaudi">Intel Habana Gaudi</a></li>
+      <li><a href="#apple-neural-engine-and-unified-memory" id="toc-apple-neural-engine-and-unified-memory">Apple Neural Engine and Unified Memory</a></li>
+      <li><a href="#page-fault-handling-and-prefetching" id="toc-page-fault-handling-and-prefetching">Page Fault Handling and Prefetching</a></li>
+      <li><a href="#tlb-optimization" id="toc-tlb-optimization">TLB Optimization</a></li>
+      <li><a href="#performance-analysis-tools" id="toc-performance-analysis-tools">Performance Analysis Tools</a></li>
+      <li><a href="#hardware-specifications" id="toc-hardware-specifications">Hardware Specifications</a></li>
+    </ul>
+    </li>
+  </ul>
+  </li>
 </ul>
 </nav>
 <h1 id="chapter-11-virtual-memory-in-aiml-accelerators">Chapter 11:
