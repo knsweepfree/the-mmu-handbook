@@ -29,15 +29,15 @@ All diagrams are inline SVG — fully scalable, print-ready, and self-contained 
 | [07](chapters/chapter-07-WITH-FIGURES.html) | Page Faults and Exception Handling | 5 | 752 KB |
 | [08](chapters/chapter-08-WITH-FIGURES.html) | Advanced MMU Topics: System Integration and Optimization | 7 | 330 KB |
 | [09](chapters/chapter-09-WITH-FIGURES.html) | Advanced Page Table Optimizations | 5 | 339 KB |
-| [10](chapters/chapter-10-WITH-FIGURES.html) | Device Memory and Peripheral Translation | 5 | 366 KB |
+| [10](chapters/chapter-10-WITH-FIGURES.html) | Device Memory and Peripheral Translation | 5 | 358 KB |
 | [11](chapters/chapter-11-WITH-FIGURES.html) | AI/ML Accelerator Memory Systems | 10 | 421 KB |
-| [12](chapters/chapter-12-WITH-FIGURES.html) | Multi-GPU TLB Coordination at Scale | 1 | 221 KB |
-| [13](chapters/chapter-13-WITH-FIGURES.html) | Machine Learning for MMU Optimization | 1 | 105 KB |
-| [14](chapters/chapter-14-WITH-FIGURES.html) | Software-Managed Memory for LLM Serving | 1 | 193 KB |
+| [12](chapters/chapter-12-WITH-FIGURES.html) | Multi-GPU TLB Coordination at Scale | 4 | 249 KB |
+| [13](chapters/chapter-13-WITH-FIGURES.html) | Machine Learning for MMU Optimization | 4 | 131 KB |
+| [14](chapters/chapter-14-WITH-FIGURES.html) | Software-Managed Memory for LLM Serving | 5 | 226 KB |
 | [15](chapters/chapter-15-WITH-FIGURES.html) | Alternative Translation Architectures | 6 | 212 KB |
 | [16](chapters/chapter-16-WITH-FIGURES.html) | Advanced TLB Optimization Techniques | 8 | 217 KB |
 
-**Total: 104 embedded SVG figures across 16 chapters (~4.0 MB)**
+**Total: 114 embedded SVG figures across 16 chapters (~4.0 MB)**
 
 ---
 
