@@ -1264,6 +1264,122 @@ Result: Spectre-style attack exploiting RL prefetcher
 
 <p><strong>Context:</strong> If Pythia showed why hardware RL fails, LVM (Learned Virtual Memory, MICRO 2025) explores whether ML can work for MMU if we're more careful about deployment.</p>
 
+<figure id="fig-13-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+  <defs>
+    <marker id="arr-13-2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#212121;"/></marker>
+    <marker id="arr-teal-13-2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#4A8A99;"/></marker>
+    <marker id="arr-red-13-2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#BF616A;"/></marker>
+  </defs>
+  <text x="450" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">LVM: Learned Index vs Radix Page Table for VA→PA Lookup</text>
+
+  <!-- LEFT: Traditional radix page table -->
+  <rect x="25" y="50" width="390" height="460" rx="8" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:2;"/>
+  <text x="220" y="73" text-anchor="middle" font-size="15" font-weight="bold" fill="#BF616A">Traditional 4-Level Radix Page Table</text>
+
+  <!-- VA breakdown -->
+  <rect x="45" y="85" width="350" height="30" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="110" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">PGD[9]</text>
+  <text x="198" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">PUD[9]</text>
+  <text x="285" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">PMD[9]</text>
+  <text x="364" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">PTE[9]</text>
+  <line x1="152" y1="90" x2="152" y2="115" style="stroke:#5E81AC;stroke-width:1;stroke-dasharray:3,2;"/>
+  <line x1="240" y1="90" x2="240" y2="115" style="stroke:#5E81AC;stroke-width:1;stroke-dasharray:3,2;"/>
+  <line x1="328" y1="90" x2="328" y2="115" style="stroke:#5E81AC;stroke-width:1;stroke-dasharray:3,2;"/>
+
+  <!-- Level 1: PGD -->
+  <rect x="180" y="130" width="80" height="40" rx="5" style="fill:#5E81AC;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="220" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFF">PGD</text>
+  <line x1="220" y1="170" x2="140" y2="195" style="stroke:#212121;stroke-width:1.5;" marker-end="url(#arr-13-2)"/>
+  <line x1="220" y1="170" x2="300" y2="195" style="stroke:#212121;stroke-width:1.5;" marker-end="url(#arr-13-2)"/>
+
+  <!-- Level 2: PUD -->
+  <rect x="80" y="200" width="75" height="35" rx="4" style="fill:#4A8A99;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="117" y="222" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFF">PUD</text>
+  <rect x="260" y="200" width="75" height="35" rx="4" style="fill:#4A8A99;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="297" y="222" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFF">PUD</text>
+  <line x1="117" y1="235" x2="90" y2="260" style="stroke:#212121;stroke-width:1.5;" marker-end="url(#arr-13-2)"/>
+  <line x1="117" y1="235" x2="145" y2="260" style="stroke:#212121;stroke-width:1.5;" marker-end="url(#arr-13-2)"/>
+
+  <!-- Level 3: PMD -->
+  <rect x="48" y="265" width="62" height="32" rx="3" style="fill:#7B68AC;stroke:#7B68AC;stroke-width:1;"/>
+  <text x="79" y="285" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">PMD</text>
+  <rect x="120" y="265" width="62" height="32" rx="3" style="fill:#7B68AC;stroke:#7B68AC;stroke-width:1;"/>
+  <text x="151" y="285" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">PMD</text>
+  <line x1="79" y1="297" x2="79" y2="320" style="stroke:#212121;stroke-width:1.5;" marker-end="url(#arr-13-2)"/>
+
+  <!-- Level 4: PTE -->
+  <rect x="48" y="325" width="62" height="32" rx="3" style="fill:#BF616A;stroke:#BF616A;stroke-width:1;"/>
+  <text x="79" y="345" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">PTE</text>
+  <line x1="79" y1="357" x2="79" y2="375" style="stroke:#212121;stroke-width:1.5;" marker-end="url(#arr-13-2)"/>
+  <text x="79" y="393" text-anchor="middle" font-size="13" fill="#4A8A99">PA</text>
+
+  <!-- Stats -->
+  <rect x="45" y="405" width="350" height="85" rx="5" style="fill:#FDECEA;stroke:#BF616A;stroke-width:1;"/>
+  <text x="220" y="424" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Performance Characteristics</text>
+  <text x="220" y="444" text-anchor="middle" font-size="12" fill="#212121">Worst case: 4 cache misses (4 × 64ns = 256ns)</text>
+  <text x="220" y="462" text-anchor="middle" font-size="12" fill="#212121">Memory: 4 × 4KB pages = fixed hierarchy</text>
+  <text x="220" y="480" text-anchor="middle" font-size="12" fill="#212121">O(log N) per lookup — same regardless of pattern</text>
+
+  <!-- RIGHT: Learned index page table (LVM) -->
+  <rect x="475" y="50" width="390" height="460" rx="8" style="fill:#F8FFF8;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="670" y="73" text-anchor="middle" font-size="15" font-weight="bold" fill="#4A8A99">LVM: Learned Index Page Table (MICRO 2025)</text>
+
+  <!-- VA input -->
+  <rect x="605" y="85" width="130" height="30" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="670" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">Virtual Address</text>
+  <line x1="670" y1="115" x2="670" y2="140" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-teal-13-2)"/>
+
+  <!-- Learned model box -->
+  <rect x="510" y="145" width="320" height="90" rx="6" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="670" y="167" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">Learned Index Model (CDF)</text>
+  <text x="670" y="187" text-anchor="middle" font-size="12" fill="#212121">Neural/linear model trained on VA distribution</text>
+  <text x="670" y="205" text-anchor="middle" font-size="12" fill="#212121">Predicts PA directly: PA ≈ f(VA)</text>
+  <text x="670" y="223" text-anchor="middle" font-size="12" fill="#212121">~1 cache line access vs 4 for radix</text>
+
+  <!-- Dual path -->
+  <line x1="620" y1="235" x2="580" y2="265" style="stroke:#4A8A99;stroke-width:1.5;" marker-end="url(#arr-teal-13-2)"/>
+  <line x1="720" y1="235" x2="760" y2="265" style="stroke:#BF616A;stroke-width:1.5;" marker-end="url(#arr-red-13-2)"/>
+  <text x="540" y="258" font-size="12" fill="#4A8A99">hit path</text>
+  <text x="720" y="258" font-size="12" fill="#BF616A">miss path</text>
+
+  <!-- Hit path -->
+  <rect x="495" y="268" width="155" height="55" rx="5" style="fill:#E8F5E9;stroke:#4A8A99;stroke-width:1.5;"/>
+  <text x="572" y="288" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Direct PA Return</text>
+  <text x="572" y="305" text-anchor="middle" font-size="12" fill="#212121">Prediction correct</text>
+  <text x="572" y="322" text-anchor="middle" font-size="12" fill="#212121">1 cycle path</text>
+
+  <!-- Miss path: fallback radix -->
+  <rect x="675" y="268" width="165" height="55" rx="5" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:1.5;"/>
+  <text x="757" y="288" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Radix Fallback</text>
+  <text x="757" y="305" text-anchor="middle" font-size="12" fill="#212121">Prediction wrong</text>
+  <text x="757" y="322" text-anchor="middle" font-size="12" fill="#212121">Full 4-level walk</text>
+
+  <!-- Training note -->
+  <rect x="495" y="350" width="345" height="70" rx="5" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="667" y="370" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">Offline Training Phase</text>
+  <text x="667" y="390" text-anchor="middle" font-size="12" fill="#212121">Profile VA distribution during warmup</text>
+  <text x="667" y="408" text-anchor="middle" font-size="12" fill="#212121">Build CDF model: compress representation</text>
+
+  <!-- Cold start warning -->
+  <rect x="495" y="440" width="345" height="55" rx="5" style="fill:#FDECEA;stroke:#BF616A;stroke-width:1;stroke-dasharray:4,2;"/>
+  <text x="667" y="460" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Cold Start Problem</text>
+  <text x="667" y="478" text-anchor="middle" font-size="12" fill="#212121">No history → radix fallback only → no benefit</text>
+
+  <!-- Legend -->
+  <rect x="25" y="522" width="840" height="24" rx="4" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1;"/>
+  <rect x="40" y="529" width="12" height="12" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:1;"/>
+  <text x="57" y="540" font-size="12" fill="#212121">Traditional: 4 cache misses worst case</text>
+  <rect x="310" y="529" width="12" height="12" style="fill:#F8FFF8;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="327" y="540" font-size="12" fill="#212121">LVM: ~1 cache line on hit path</text>
+  <text x="590" y="540" font-size="12" fill="#616161">Source: LVM (MICRO 2025)</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 13.2:</strong> LVM learned index page table (MICRO 2025): traditional four-level radix traversal (left) incurs up to four cache misses per lookup. LVM trains a learned CDF model on the virtual address distribution to predict physical addresses directly in ~one cache line access, with a radix fallback for mispredictions. Cold-start workloads — where no history exists — receive no benefit and fall through to the full radix walk.</figcaption>
+</figure>
+
+
 <h3 id="section-13.3.1">13.3.1 The Learned Index Revolution</h3>
 
 <p><strong>Background: Learned Indexes (Google, 2018)</strong></p>
@@ -1558,6 +1674,85 @@ Even if LVM ships, it only reduces overhead by 44%. Meanwhile, <strong>vLLM (Cha
 
 <p><strong>Context:</strong> If Pythia failed (hardware RL) and LVM is uncertain (hardware ML with offline training), why did LeCaR succeed? The answer reveals the critical success factors for ML in memory management.</p>
 
+<figure id="fig-13-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+<svg width="900" height="570" viewBox="0 0 900 570" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+  <defs>
+    <marker id="arr-13-3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#212121;"/></marker>
+    <marker id="arr-teal-13-3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#4A8A99;"/></marker>
+    <marker id="arr-red-13-3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#BF616A;"/></marker>
+  </defs>
+  <text x="450" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">LeCaR: Online Regret-Minimization Cache Replacement (NSDI 2019)</text>
+
+  <!-- Left: two base policies -->
+  <rect x="25" y="50" width="240" height="160" rx="8" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:2;"/>
+  <text x="145" y="72" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">LRU Policy</text>
+  <text x="145" y="92" text-anchor="middle" font-size="12" fill="#212121">Evict least recently used</text>
+  <text x="145" y="110" text-anchor="middle" font-size="12" fill="#212121">Good for: temporal locality</text>
+  <text x="145" y="128" text-anchor="middle" font-size="12" fill="#212121">e.g. video streaming,</text>
+  <text x="145" y="146" text-anchor="middle" font-size="12" fill="#212121">recently accessed files</text>
+  <text x="145" y="165" text-anchor="middle" font-size="12" fill="#5E81AC">Weight w_LRU</text>
+  <text x="145" y="183" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">Initially: 0.5</text>
+
+  <rect x="25" y="230" width="240" height="160" rx="8" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="145" y="252" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">LFU Policy</text>
+  <text x="145" y="272" text-anchor="middle" font-size="12" fill="#212121">Evict least frequently used</text>
+  <text x="145" y="290" text-anchor="middle" font-size="12" fill="#212121">Good for: frequency locality</text>
+  <text x="145" y="308" text-anchor="middle" font-size="12" fill="#212121">e.g. popular web pages,</text>
+  <text x="145" y="326" text-anchor="middle" font-size="12" fill="#212121">viral video CDN hits</text>
+  <text x="145" y="345" text-anchor="middle" font-size="12" fill="#4A8A99">Weight w_LFU</text>
+  <text x="145" y="363" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Initially: 0.5</text>
+
+  <!-- Arrows to combiner -->
+  <line x1="265" y1="130" x2="360" y2="220" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr-13-3)"/>
+  <line x1="265" y1="310" x2="360" y2="310" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-13-3)"/>
+
+  <!-- Center: LeCaR combiner -->
+  <rect x="360" y="185" width="200" height="165" rx="8" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:2;"/>
+  <text x="460" y="207" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">LeCaR Combiner</text>
+  <text x="460" y="227" text-anchor="middle" font-size="12" fill="#212121">Eviction decision:</text>
+  <text x="460" y="247" text-anchor="middle" font-size="13" fill="#5E81AC">Probabilistic mixing</text>
+  <text x="460" y="267" text-anchor="middle" font-size="12" fill="#212121">P(LRU) = w_LRU</text>
+  <text x="460" y="285" text-anchor="middle" font-size="12" fill="#212121">P(LFU) = w_LFU</text>
+  <text x="460" y="305" text-anchor="middle" font-size="12" fill="#212121">w_LRU + w_LFU = 1</text>
+  <text x="460" y="325" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Updated online per miss</text>
+  <text x="460" y="343" text-anchor="middle" font-size="12" fill="#212121">via regret minimization</text>
+
+  <!-- Weight update arrow (feedback loop) -->
+  <path d="M 460 350 Q 460 430 350 430 Q 200 430 145 410" style="fill:none;stroke:#BF616A;stroke-width:2;stroke-dasharray:5,3;" marker-end="url(#arr-red-13-3)"/>
+  <text x="320" y="448" text-anchor="middle" font-size="12" fill="#BF616A">weight update on cache miss</text>
+
+  <!-- Arrow to output -->
+  <line x1="560" y1="267" x2="620" y2="267" style="stroke:#212121;stroke-width:2;" marker-end="url(#arr-13-3)"/>
+
+  <!-- Output: eviction decision -->
+  <rect x="620" y="230" width="255" height="75" rx="6" style="fill:#E8F5E9;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="747" y="253" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">Eviction Decision</text>
+  <text x="747" y="273" text-anchor="middle" font-size="12" fill="#212121">Always ≥ max(LRU, LFU)</text>
+  <text x="747" y="291" text-anchor="middle" font-size="12" fill="#212121">Provably no worse than best</text>
+
+  <!-- Guarantee box -->
+  <rect x="620" y="330" width="255" height="60" rx="6" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="747" y="352" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Provable Safety Guarantee</text>
+  <text x="747" y="370" text-anchor="middle" font-size="12" fill="#212121">Regret bound: O(√T log K)</text>
+  <text x="747" y="388" text-anchor="middle" font-size="12" fill="#212121">Verifiable, no hardware risk</text>
+
+  <!-- Results section -->
+  <rect x="25" y="470" width="850" height="60" rx="6" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1.5;"/>
+  <text x="450" y="490" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">Production Results — Google CDN (Deployed)</text>
+  <text x="200" y="512" text-anchor="middle" font-size="12" fill="#212121">Miss rate: 11% lower than LRU alone</text>
+  <text x="450" y="512" text-anchor="middle" font-size="12" fill="#212121">Miss rate: 8% lower than LFU alone</text>
+  <text x="700" y="512" text-anchor="middle" font-size="12" fill="#4A8A99">Deployed at scale — no hardware changes needed</text>
+
+  <!-- Key insight: why it works -->
+  <rect x="25" y="540" width="850" height="22" rx="4" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1;"/>
+  <text x="450" y="556" text-anchor="middle" font-size="12" fill="#212121">Why it works: software deployment + provable safety + workload match (CDN = predictable mix of temporal + frequency locality)</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 13.3:</strong> LeCaR online adaptive cache replacement (NSDI 2019, deployed at Google CDN): two base policies — LRU (good for temporal locality) and LFU (good for frequency locality) — are combined probabilistically using regret-minimization weights that update online after each miss. The combiner provably achieves miss rates no worse than the best individual policy (regret bound O(√T log K)), enabling safe production deployment without hardware changes.</figcaption>
+</figure>
+
+
 <h3 id="section-13.4.1">13.3.4.1 LeCaR Architecture</h3>
 
 <p><strong>LeCaR (Low-overhead Cost-Aware Replacement, NSDI 2019, Google)</strong></p>
@@ -1785,6 +1980,122 @@ vLLM applies the same principles but uses <strong>deterministic algorithms</stro
 <h2 id="section-13.5">13.5 Chapter Summary</h2>
 
 <p>After analyzing 30+ papers from the research corpus, a clear pattern emerges. ML for memory management succeeds or fails based on three dimensions:</p>
+
+<figure id="fig-13-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+<svg width="900" height="545" viewBox="0 0 900 545" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+  <defs>
+    <marker id="arr-13-4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#212121;"/></marker>
+  </defs>
+  <text x="450" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">ML for Memory Management: Deployment Viability Matrix</text>
+
+  <!-- Table header -->
+  <rect x="25" y="48" width="850" height="28" rx="4" style="fill:#5E81AC;"/>
+  <text x="120" y="67" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFF">Approach</text>
+  <text x="255" y="67" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFF">Deployment Layer</text>
+  <text x="380" y="67" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFF">Safety</text>
+  <text x="495" y="67" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFF">Workload Match</text>
+  <text x="640" y="67" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFF">Shipped?</text>
+  <text x="780" y="67" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFF">Root Cause</text>
+
+  <!-- Row data -->
+  <!-- Pythia -->
+  <rect x="25" y="76" width="850" height="44" style="fill:#FDECEA;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="120" y="94" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Pythia (TLB RL)</text>
+  <text x="120" y="111" text-anchor="middle" font-size="12" fill="#616161">MICRO 2020</text>
+  <text x="255" y="102" text-anchor="middle" font-size="12" fill="#212121">Hardware prefetcher</text>
+  <text x="380" y="94" text-anchor="middle" font-size="13" fill="#BF616A">❌ Can regress</text>
+  <text x="380" y="111" text-anchor="middle" font-size="12" fill="#212121">No safety bound</text>
+  <text x="495" y="102" text-anchor="middle" font-size="12" fill="#212121">General (unpredictable)</text>
+  <text x="640" y="102" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">❌ Not shipped</text>
+  <text x="780" y="94" text-anchor="middle" font-size="12" fill="#212121">HW + unpredictable</text>
+  <text x="780" y="111" text-anchor="middle" font-size="12" fill="#212121">+ no safety</text>
+
+  <!-- LVM -->
+  <rect x="25" y="120" width="850" height="44" style="fill:#FFF9E6;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="120" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">LVM (Page Tables)</text>
+  <text x="120" y="155" text-anchor="middle" font-size="12" fill="#616161">MICRO 2025</text>
+  <text x="255" y="147" text-anchor="middle" font-size="12" fill="#212121">HW/microcode</text>
+  <text x="380" y="138" text-anchor="middle" font-size="13" fill="#9E9E9E">⚠ Fallback exists</text>
+  <text x="380" y="155" text-anchor="middle" font-size="12" fill="#212121">Radix fallback path</text>
+  <text x="495" y="147" text-anchor="middle" font-size="12" fill="#212121">General (cold start)</text>
+  <text x="640" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#9E9E9E">⚠ Maybe ~2028</text>
+  <text x="780" y="138" text-anchor="middle" font-size="12" fill="#212121">Fallback helps but</text>
+  <text x="780" y="155" text-anchor="middle" font-size="12" fill="#212121">cold start hurts</text>
+
+  <!-- LeCaR -->
+  <rect x="25" y="164" width="850" height="44" style="fill:#E8F5E9;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="120" y="182" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">LeCaR (Cache)</text>
+  <text x="120" y="199" text-anchor="middle" font-size="12" fill="#616161">NSDI 2019, Google</text>
+  <text x="255" y="191" text-anchor="middle" font-size="12" fill="#212121">Software</text>
+  <text x="380" y="182" text-anchor="middle" font-size="13" fill="#4A8A99">✅ Provable</text>
+  <text x="380" y="199" text-anchor="middle" font-size="12" fill="#212121">≥ max(LRU, LFU)</text>
+  <text x="495" y="191" text-anchor="middle" font-size="12" fill="#212121">CDN (predictable)</text>
+  <text x="640" y="182" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">✅ Deployed</text>
+  <text x="780" y="182" text-anchor="middle" font-size="12" fill="#212121">All 3 factors</text>
+  <text x="780" y="199" text-anchor="middle" font-size="12" fill="#212121">aligned</text>
+
+  <!-- Glider -->
+  <rect x="25" y="208" width="850" height="44" style="fill:#FFF8F8;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="120" y="226" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Glider (Cache)</text>
+  <text x="120" y="243" text-anchor="middle" font-size="12" fill="#616161">ISCA 2018</text>
+  <text x="255" y="235" text-anchor="middle" font-size="12" fill="#212121">Hardware</text>
+  <text x="380" y="226" text-anchor="middle" font-size="13" fill="#9E9E9E">⚠ Empirical only</text>
+  <text x="380" y="243" text-anchor="middle" font-size="12" fill="#212121">No formal bound</text>
+  <text x="495" y="235" text-anchor="middle" font-size="12" fill="#212121">General</text>
+  <text x="640" y="226" text-anchor="middle" font-size="13" font-weight="bold" fill="#9E9E9E">⚠ Influenced Intel</text>
+  <text x="780" y="235" text-anchor="middle" font-size="12" fill="#212121">Not directly</text>
+  <text x="780" y="243" text-anchor="middle" font-size="12" fill="#212121">shipped</text>
+
+  <!-- Voyager -->
+  <rect x="25" y="252" width="850" height="44" style="fill:#FDECEA;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="120" y="270" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Voyager (Prefetch)</text>
+  <text x="120" y="287" text-anchor="middle" font-size="12" fill="#616161">ISCA 2022</text>
+  <text x="255" y="279" text-anchor="middle" font-size="12" fill="#212121">Hardware</text>
+  <text x="380" y="270" text-anchor="middle" font-size="13" fill="#BF616A">❌ Can regress</text>
+  <text x="380" y="287" text-anchor="middle" font-size="12" fill="#212121">No safety</text>
+  <text x="495" y="279" text-anchor="middle" font-size="12" fill="#212121">General</text>
+  <text x="640" y="279" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">❌ Not shipped</text>
+  <text x="780" y="270" text-anchor="middle" font-size="12" fill="#212121">Hardware +</text>
+  <text x="780" y="287" text-anchor="middle" font-size="12" fill="#212121">regression risk</text>
+
+  <!-- Success factors analysis -->
+  <rect x="25" y="318" width="850" height="26" rx="3" style="fill:#5E81AC;"/>
+  <text x="450" y="336" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFF">Three Factors Required for ML Deployment in Memory Management</text>
+
+  <rect x="25" y="344" width="273" height="130" rx="6" style="fill:#E8F5E9;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="161" y="365" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">Factor 1: Safety</text>
+  <text x="161" y="385" text-anchor="middle" font-size="12" fill="#212121">Must not regress vs baseline</text>
+  <text x="161" y="403" text-anchor="middle" font-size="12" fill="#212121">Provable bound preferred</text>
+  <text x="161" y="421" text-anchor="middle" font-size="12" fill="#212121">Graceful fallback acceptable</text>
+  <text x="161" y="444" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Most ML fails here</text>
+  <text x="161" y="463" text-anchor="middle" font-size="12" fill="#212121">(hardware RL especially)</text>
+
+  <rect x="313" y="344" width="273" height="130" rx="6" style="fill:#E8F5E9;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="449" y="365" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">Factor 2: Deployment Layer</text>
+  <text x="449" y="385" text-anchor="middle" font-size="12" fill="#212121">Software: low risk, flexible</text>
+  <text x="449" y="403" text-anchor="middle" font-size="12" fill="#212121">Hardware: high risk, slow</text>
+  <text x="449" y="421" text-anchor="middle" font-size="12" fill="#212121">to iterate (5+ year cycle)</text>
+  <text x="449" y="444" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Software wins today</text>
+  <text x="449" y="463" text-anchor="middle" font-size="12" fill="#212121">(LeCaR model)</text>
+
+  <rect x="601" y="344" width="274" height="130" rx="6" style="fill:#E8F5E9;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="738" y="365" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">Factor 3: Workload Match</text>
+  <text x="738" y="385" text-anchor="middle" font-size="12" fill="#212121">Predictable, structured</text>
+  <text x="738" y="403" text-anchor="middle" font-size="12" fill="#212121">access patterns work</text>
+  <text x="738" y="421" text-anchor="middle" font-size="12" fill="#212121">General workloads fail</text>
+  <text x="738" y="444" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">CDN, ML inference win</text>
+  <text x="738" y="463" text-anchor="middle" font-size="12" fill="#212121">(known distribution)</text>
+
+  <!-- Final verdict -->
+  <rect x="25" y="490" width="850" height="40" rx="6" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1.5;"/>
+  <text x="450" y="508" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">Verdict: ML works when all three factors align (as in LeCaR)</text>
+  <text x="450" y="524" text-anchor="middle" font-size="12" fill="#212121">Hardware RL for TLBs fails primarily on Safety (Factor 1) — not model accuracy</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 13.4:</strong> ML for memory management deployment viability matrix: five representative approaches sorted by deployment outcome. Three independent factors determine success — safety guarantees, deployment layer, and workload match. LeCaR is the only fully deployed system, succeeding because all three factors aligned: software deployment reduces risk, the provable regret bound ensures safety, and CDN workloads provide predictable access patterns. Hardware RL approaches (Pythia, Voyager) consistently fail on Factor 1.</figcaption>
+</figure>
+
 
 <h3>The Success Matrix</h3>
 
