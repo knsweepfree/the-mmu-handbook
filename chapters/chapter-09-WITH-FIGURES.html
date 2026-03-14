@@ -3618,65 +3618,63 @@ swap:</p>
   <rect x="20" y="65" width="860" height="195" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
   <rect x="20" y="65" width="860" height="26" rx="0" fill="#5E81AC"/>
   <text x="450" y="82" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">zRAM: Compressed RAM Block Device (no disk path)</text>
-  <rect x="5" y="102" width="110" height="52" rx="6" fill="#34495E" filter="url(#sh)"/>
-  <text x="60" y="118" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Process</text>
-  <text x="60" y="136" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">page out</text>
-  <text x="60" y="160" text-anchor="middle" font-size="10" fill="#B0BEC5"></text>
-  <line x1="115" y1="128" x2="125" y2="128" stroke="#34495E" stroke-width="2" marker-end="url(#arr)"/>
-  <rect x="125" y="102" width="110" height="52" rx="6" fill="#34495E" filter="url(#sh)"/>
-  <text x="180" y="118" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">kswapd</text>
-  <text x="180" y="136" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">select victim</text>
-  <text x="180" y="160" text-anchor="middle" font-size="10" fill="#B0BEC5"></text>
-  <line x1="235" y1="128" x2="245" y2="128" stroke="#34495E" stroke-width="2" marker-end="url(#arr)"/>
-  <rect x="245" y="102" width="110" height="52" rx="6" fill="#4A8A99" filter="url(#sh)"/>
-  <text x="300" y="118" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">LZ4 / Zstd</text>
-  <text x="300" y="136" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">compress</text>
-  <text x="300" y="160" text-anchor="middle" font-size="10" fill="#CCE8EC">4KB→1-2KB
-~5µs</text>
-  <line x1="355" y1="128" x2="365" y2="128" stroke="#4A8A99" stroke-width="2" marker-end="url(#arr)"/>
-  <rect x="365" y="102" width="110" height="52" rx="6" fill="#5E81AC" filter="url(#sh)"/>
-  <text x="420" y="118" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">zRAM Pool</text>
-  <text x="420" y="136" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">(in RAM)</text>
-  <text x="420" y="160" text-anchor="middle" font-size="10" fill="#DDEAF5">50-70%
-compressed</text>
-  <line x1="475" y1="128" x2="485" y2="128" stroke="#5E81AC" stroke-width="2" marker-end="url(#arr)"/>
-  <rect x="505" y="102" width="110" height="52" rx="6" fill="#34495E" filter="url(#sh)"/>
-  <text x="560" y="118" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Swap PTE</text>
-  <text x="560" y="136" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">P=0</text>
-  <text x="560" y="160" text-anchor="middle" font-size="10" fill="#B0BEC5">swap offset</text>
-  <path d="M 560 154 Q 560 190 310 190 Q 90 190 90 168" fill="none" stroke="#4A8A99" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-t)"/>
-  <text x="320" y="202" text-anchor="middle" font-size="12" font-weight="normal" fill="#4A8A99">page fault → decompress (~100 µs) → restore PTE</text>
-  <rect x="20" y="270" width="860" height="180" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
-  <rect x="20" y="270" width="860" height="26" rx="0" fill="#4A8A99"/>
-  <text x="450" y="287" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">zswap: Compressed Cache in Front of Block Swap (disk as last resort)</text>
-  <rect x="5" y="307" width="110" height="50" rx="6" fill="#5E81AC" filter="url(#sh)"/>
-  <text x="60" y="322" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Page out</text>
-  <line x1="115" y1="332" x2="125" y2="332" stroke="#5E81AC" stroke-width="2" marker-end="url(#arr)"/>
-  <rect x="125" y="307" width="110" height="50" rx="6" fill="#4A8A99" filter="url(#sh)"/>
-  <text x="180" y="322" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Compress</text>
-  <text x="180" y="339" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">LZ4/LZO</text>
-  <line x1="235" y1="332" x2="245" y2="332" stroke="#4A8A99" stroke-width="2" marker-end="url(#arr)"/>
-  <rect x="255" y="307" width="110" height="50" rx="6" fill="#4A8A99" filter="url(#sh)"/>
-  <text x="310" y="322" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">zswap Pool</text>
-  <text x="310" y="339" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">(RAM limited)</text>
-  <line x1="365" y1="332" x2="375" y2="332" stroke="#4A8A99" stroke-width="2" marker-end="url(#arr)"/>
-  <rect x="395" y="307" width="110" height="50" rx="6" fill="#34495E" filter="url(#sh)"/>
-  <text x="450" y="322" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Decompress</text>
-  <text x="450" y="339" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">(pool full)</text>
-  <line x1="505" y1="332" x2="515" y2="332" stroke="#34495E" stroke-width="2" marker-end="url(#arr)"/>
-  <rect x="525" y="307" width="110" height="50" rx="6" fill="#BF616A" filter="url(#sh)"/>
-  <text x="580" y="322" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Disk / SSD</text>
-  <text x="580" y="339" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">~10 ms</text>
-  <rect x="20" y="462" width="860" height="55" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
-  <rect x="20" y="462" width="860" height="24" rx="0" fill="#34495E"/>
-  <text x="450" y="479" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Latency Comparison (4 KB page fault recovery)</text>
-  <text x="160" y="497" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">zRAM hit:</text>
-  <text x="240" y="497" text-anchor="middle" font-size="12" font-weight="bold" fill="#5E81AC">~100 µs</text>
-  <text x="400" y="497" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">zswap hit:</text>
-  <text x="480" y="497" text-anchor="middle" font-size="12" font-weight="bold" fill="#4A8A99">~200 µs</text>
-  <text x="620" y="497" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">Disk miss:</text>
-  <text x="700" y="497" text-anchor="middle" font-size="12" font-weight="bold" fill="#BF616A">~10 ms</text>
-  <text x="450" y="514" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">zRAM: all RAM, no disk. zswap: RAM cache + disk fallback. Both use Linux swap PTE P=0 mechanism.</text>
+  <rect x="35" y="102" width="110" height="52" rx="6" fill="#34495E" filter="url(#sh)"/>
+  <text x="90" y="120" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Process</text>
+  <text x="90" y="138" text-anchor="middle" font-size="12" font-weight="normal" fill="#FFFFFF">page out</text>
+  <rect x="200" y="102" width="110" height="52" rx="6" fill="#34495E" filter="url(#sh)"/>
+  <text x="255" y="120" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">kswapd</text>
+  <text x="255" y="138" text-anchor="middle" font-size="12" font-weight="normal" fill="#FFFFFF">select victim</text>
+  <rect x="365" y="102" width="110" height="52" rx="6" fill="#4A8A99" filter="url(#sh)"/>
+  <text x="420" y="120" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">LZ4 / Zstd</text>
+  <text x="420" y="138" text-anchor="middle" font-size="12" font-weight="normal" fill="#FFFFFF">compress</text>
+  <text x="420" y="153" text-anchor="middle" font-size="10" fill="#CCE8EC">4KB→1-2KB / ~5µs</text>
+  <rect x="530" y="102" width="110" height="52" rx="6" fill="#5E81AC" filter="url(#sh)"/>
+  <text x="585" y="120" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">zRAM Pool</text>
+  <text x="585" y="138" text-anchor="middle" font-size="12" font-weight="normal" fill="#FFFFFF">(in RAM)</text>
+  <text x="585" y="153" text-anchor="middle" font-size="10" fill="#DDEAF5">50-70% ratio</text>
+  <rect x="695" y="102" width="110" height="52" rx="6" fill="#34495E" filter="url(#sh)"/>
+  <text x="750" y="120" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Swap PTE</text>
+  <text x="750" y="138" text-anchor="middle" font-size="12" font-weight="normal" fill="#FFFFFF">P=0</text>
+  <text x="750" y="153" text-anchor="middle" font-size="10" fill="#B0BEC5">swap offset</text>
+  <line x1="145" y1="128" x2="200" y2="128" stroke="#34495E" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="310" y1="128" x2="365" y2="128" stroke="#34495E" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="475" y1="128" x2="530" y2="128" stroke="#4A8A99" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="640" y1="128" x2="695" y2="128" stroke="#5E81AC" stroke-width="2" marker-end="url(#arr)"/>
+  <path d="M 750 154 Q 750 195 410 195 Q 90 195 90 168" fill="none" stroke="#4A8A99" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-t)"/>
+  <text x="390" y="210" text-anchor="middle" font-size="12" font-weight="normal" fill="#4A8A99">page fault → decompress (~100 µs) → restore PTE</text>
+  <rect x="20" y="228" width="860" height="180" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="20" y="228" width="860" height="26" rx="0" fill="#4A8A99"/>
+  <text x="450" y="245" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">zswap: Compressed Cache in Front of Block Swap (disk as last resort)</text>
+  <rect x="35" y="265" width="110" height="50" rx="6" fill="#5E81AC" filter="url(#sh)"/>
+  <text x="90" y="283" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Page out</text>
+  <rect x="200" y="265" width="110" height="50" rx="6" fill="#4A8A99" filter="url(#sh)"/>
+  <text x="255" y="283" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Compress</text>
+  <text x="255" y="300" text-anchor="middle" font-size="11" font-weight="normal" fill="#FFFFFF">LZ4/LZO</text>
+  <rect x="365" y="265" width="110" height="50" rx="6" fill="#4A8A99" filter="url(#sh)"/>
+  <text x="420" y="283" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">zswap Pool</text>
+  <text x="420" y="300" text-anchor="middle" font-size="11" font-weight="normal" fill="#FFFFFF">(RAM limited)</text>
+  <rect x="530" y="265" width="110" height="50" rx="6" fill="#34495E" filter="url(#sh)"/>
+  <text x="585" y="283" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Decompress</text>
+  <text x="585" y="300" text-anchor="middle" font-size="11" font-weight="normal" fill="#FFFFFF">(pool full)</text>
+  <rect x="695" y="265" width="110" height="50" rx="6" fill="#BF616A" filter="url(#sh)"/>
+  <text x="750" y="283" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Disk / SSD</text>
+  <text x="750" y="300" text-anchor="middle" font-size="11" font-weight="normal" fill="#FFFFFF">~10 ms</text>
+  <line x1="145" y1="290" x2="200" y2="290" stroke="#5E81AC" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="310" y1="290" x2="365" y2="290" stroke="#4A8A99" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="475" y1="290" x2="530" y2="290" stroke="#4A8A99" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="640" y1="290" x2="695" y2="290" stroke="#34495E" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="475" y1="265" x2="475" y2="255" stroke="#BF616A" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="475" y="252" text-anchor="middle" font-size="11" font-weight="normal" fill="#BF616A">pool full →</text>
+  <rect x="20" y="422" width="860" height="55" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="20" y="422" width="860" height="24" rx="0" fill="#34495E"/>
+  <text x="450" y="439" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Latency Comparison (4 KB page fault recovery)</text>
+  <text x="180" y="457" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">zRAM hit:</text>
+  <text x="260" y="457" text-anchor="middle" font-size="12" font-weight="bold" fill="#5E81AC">~50–200 µs</text>
+  <text x="450" y="457" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">zswap hit:</text>
+  <text x="530" y="457" text-anchor="middle" font-size="12" font-weight="bold" fill="#4A8A99">~100–500 µs</text>
+  <text x="720" y="457" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">Disk miss:</text>
+  <text x="800" y="457" text-anchor="middle" font-size="12" font-weight="bold" fill="#BF616A">~10 ms</text>
+  <text x="450" y="476" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">zRAM: no disk, best latency. zswap: RAM cache + disk fallback. Both use swap PTE P=0 mechanism.</text>
 </svg>
 <figcaption><strong>Figure 9.7:</strong> Memory compression pipeline: zRAM and zswap. zRAM creates a compressed in-RAM block device — page eviction compresses 4 KB to ~1–2 KB in ~5 µs; fault recovery decompresses in ~100 µs. zswap adds a compressed RAM cache in front of block swap, falling back to disk (10 ms) only when the pool fills.</figcaption>
 </figure>
@@ -4884,23 +4882,23 @@ virtual memory at scale.</p><script>
                 "sections": [
                       {
                             "text": "12.1 The Six Drivers of AI Memory Systems",
-                            "id": "section-12.7"
+                            "id": "section-12.1"
                       },
                       {
                             "text": "12.2 The Architectural Cost of Runtime Address Translation",
-                            "id": "section-12.6"
+                            "id": "section-12.2"
                       },
                       {
                             "text": "12.3 Introduction - When Good Architecture Faces New Constraints",
-                            "id": "section-12.7"
+                            "id": "section-12.3"
                       },
                       {
                             "text": "12.4 Multi-GPU TLB Coordination - The O(N) Scaling Problem",
-                            "id": "section-12.6"
+                            "id": "section-12.4"
                       },
                       {
                             "text": "12.5 Multi-Tenancy - Isolation vs Performance Trade-Offs",
-                            "id": "section-12.7"
+                            "id": "section-12.5"
                       },
                       {
                             "text": "12.6 Virtualization - The Page Fault Challenge",
