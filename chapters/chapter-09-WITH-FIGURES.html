@@ -3312,6 +3312,148 @@ scalability. Modern kernels employ several strategies to parallelize
 operations that traditionally required global synchronization.</p>
 <h3 id="parallel-page-fault-handling">Parallel Page Fault Handling</h3>
 <p>Traditional approach serializes all faults on the mmap_lock:</p>
+
+<figure id="fig-9-6">
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#212121"/></marker>
+    <marker id="arr-b" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
+    <marker id="arr-r" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#D32F2F"/></marker>
+    <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/></filter>
+  </defs>
+
+  <text x="30" y="36" font-size="20" font-weight="bold" fill="#212121">Parallel Page Table Operations: Lock Hierarchy and Contention</text>
+  <text x="30" y="57" font-size="13" fill="#616161">Linux uses a fine-grained locking hierarchy to allow concurrent page table modifications across CPU cores.</text>
+
+  <!-- Left: Serial (bad) -->
+  <rect x="20" y="72" width="380" height="330" rx="8" fill="#FFEBEE" stroke="#D32F2F" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="210" y="96" text-anchor="middle" font-size="14" font-weight="bold" fill="#D32F2F">❌ Naive: Single Global Lock</text>
+  <text x="210" y="114" text-anchor="middle" font-size="12" fill="#616161">All CPUs serialised on one mmap_lock</text>
+
+  <!-- Four CPUs waiting -->
+  <rect x="35" y="128" width="80" height="36" rx="5" fill="#1565C0" filter="url(#sh)"/>
+  <text x="75" y="150" text-anchor="middle" font-size="13" fill="white" font-weight="bold">CPU 0</text>
+
+  <rect x="125" y="128" width="80" height="36" rx="5" fill="#9E9E9E"/>
+  <text x="165" y="150" text-anchor="middle" font-size="12" fill="white">CPU 1</text>
+  <text x="165" y="168" text-anchor="middle" font-size="10" fill="#D32F2F">waiting...</text>
+
+  <rect x="215" y="128" width="80" height="36" rx="5" fill="#9E9E9E"/>
+  <text x="255" y="150" text-anchor="middle" font-size="12" fill="white">CPU 2</text>
+  <text x="255" y="168" text-anchor="middle" font-size="10" fill="#D32F2F">waiting...</text>
+
+  <rect x="305" y="128" width="80" height="36" rx="5" fill="#9E9E9E"/>
+  <text x="345" y="150" text-anchor="middle" font-size="12" fill="white">CPU 3</text>
+  <text x="345" y="168" text-anchor="middle" font-size="10" fill="#D32F2F">waiting...</text>
+
+  <!-- Single lock -->
+  <rect x="110" y="188" width="190" height="46" rx="6" fill="#D32F2F" filter="url(#sh)"/>
+  <text x="205" y="208" text-anchor="middle" font-size="13" fill="white" font-weight="bold">mmap_lock (write)</text>
+  <text x="205" y="226" text-anchor="middle" font-size="11" fill="#FFCDD2">held by CPU 0</text>
+
+  <line x1="75" y1="164" x2="160" y2="188" stroke="#1565C0" stroke-width="2" marker-end="url(#arr-b)"/>
+  <line x1="165" y1="164" x2="185" y2="188" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="255" y1="164" x2="220" y2="188" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="345" y1="164" x2="245" y2="188" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- Page table -->
+  <rect x="110" y="254" width="190" height="46" rx="6" fill="#37474F"/>
+  <text x="205" y="274" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Page Table</text>
+  <text x="205" y="292" text-anchor="middle" font-size="11" fill="#B0BEC5">one VMA at a time</text>
+  <line x1="205" y1="234" x2="205" y2="254" stroke="#D32F2F" stroke-width="2" marker-end="url(#arr-r)"/>
+
+  <text x="210" y="330" text-anchor="middle" font-size="13" fill="#D32F2F" font-weight="bold">Result: 3 CPUs idle</text>
+  <text x="210" y="350" text-anchor="middle" font-size="12" fill="#D32F2F">Throughput: 1× (serialised)</text>
+  <text x="210" y="370" text-anchor="middle" font-size="12" fill="#616161">fork()/mmap() latency spikes</text>
+  <text x="210" y="390" text-anchor="middle" font-size="12" fill="#616161">at container scale</text>
+
+  <!-- Right: Parallel (good) -->
+  <rect x="420" y="72" width="460" height="330" rx="8" fill="#E8F5E9" stroke="#00796B" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="650" y="96" text-anchor="middle" font-size="14" font-weight="bold" fill="#00796B">✓ Linux: Fine-Grained Lock Hierarchy</text>
+  <text x="650" y="114" text-anchor="middle" font-size="12" fill="#616161">mmap_lock (read) + per-PTE spinlocks</text>
+
+  <!-- Four CPUs all working -->
+  <rect x="432" y="128" width="80" height="36" rx="5" fill="#1565C0" filter="url(#sh)"/>
+  <text x="472" y="150" text-anchor="middle" font-size="13" fill="white" font-weight="bold">CPU 0</text>
+
+  <rect x="532" y="128" width="80" height="36" rx="5" fill="#1565C0" filter="url(#sh)"/>
+  <text x="572" y="150" text-anchor="middle" font-size="13" fill="white" font-weight="bold">CPU 1</text>
+
+  <rect x="632" y="128" width="80" height="36" rx="5" fill="#1565C0" filter="url(#sh)"/>
+  <text x="672" y="150" text-anchor="middle" font-size="13" fill="white" font-weight="bold">CPU 2</text>
+
+  <rect x="732" y="128" width="80" height="36" rx="5" fill="#1565C0" filter="url(#sh)"/>
+  <text x="772" y="150" text-anchor="middle" font-size="13" fill="white" font-weight="bold">CPU 3</text>
+
+  <!-- mmap_lock (read - shared) -->
+  <rect x="432" y="188" width="380" height="36" rx="6" fill="#00796B" filter="url(#sh)"/>
+  <text x="622" y="208" text-anchor="middle" font-size="13" fill="white" font-weight="bold">mmap_lock (read — shared, all CPUs hold)</text>
+
+  <line x1="472" y1="164" x2="502" y2="188" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <line x1="572" y1="164" x2="562" y2="188" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <line x1="672" y1="164" x2="682" y2="188" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <line x1="772" y1="164" x2="742" y2="188" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <!-- Individual PTE spinlocks -->
+  <rect x="432" y="245" width="80" height="40" rx="5" fill="#E65100" filter="url(#sh)"/>
+  <text x="472" y="262" text-anchor="middle" font-size="11" fill="white" font-weight="bold">PTE lock</text>
+  <text x="472" y="278" text-anchor="middle" font-size="10" fill="#FFCCBC">VMA A</text>
+
+  <rect x="532" y="245" width="80" height="40" rx="5" fill="#E65100" filter="url(#sh)"/>
+  <text x="572" y="262" text-anchor="middle" font-size="11" fill="white" font-weight="bold">PTE lock</text>
+  <text x="572" y="278" text-anchor="middle" font-size="10" fill="#FFCCBC">VMA B</text>
+
+  <rect x="632" y="245" width="80" height="40" rx="5" fill="#E65100" filter="url(#sh)"/>
+  <text x="672" y="262" text-anchor="middle" font-size="11" fill="white" font-weight="bold">PTE lock</text>
+  <text x="672" y="278" text-anchor="middle" font-size="10" fill="#FFCCBC">VMA C</text>
+
+  <rect x="732" y="245" width="80" height="40" rx="5" fill="#E65100" filter="url(#sh)"/>
+  <text x="772" y="262" text-anchor="middle" font-size="11" fill="white" font-weight="bold">PTE lock</text>
+  <text x="772" y="278" text-anchor="middle" font-size="10" fill="#FFCCBC">VMA D</text>
+
+  <line x1="472" y1="224" x2="472" y2="245" stroke="#00796B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="572" y1="224" x2="572" y2="245" stroke="#00796B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="672" y1="224" x2="672" y2="245" stroke="#00796B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="772" y1="224" x2="772" y2="245" stroke="#00796B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <text x="650" y="320" text-anchor="middle" font-size="13" fill="#2E7D32" font-weight="bold">Result: 4× parallel throughput</text>
+  <text x="650" y="340" text-anchor="middle" font-size="12" fill="#2E7D32">Each CPU modifies independent PTE pages</text>
+  <text x="650" y="360" text-anchor="middle" font-size="12" fill="#616161">Lock granularity: one spinlock per 512-entry PTE page</text>
+  <text x="650" y="378" text-anchor="middle" font-size="12" fill="#616161">Write lock only for fork/unmap (VMA splits)</text>
+
+  <!-- Bottom: Lock hierarchy summary -->
+  <rect x="20" y="415" width="860" height="120" rx="8" fill="white" stroke="#9E9E9E" stroke-width="1.5"/>
+  <text x="450" y="440" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Linux Page Table Lock Hierarchy (outermost → innermost)</text>
+
+  <rect x="35" y="452" width="155" height="34" rx="4" fill="#1565C0"/>
+  <text x="112" y="470" text-anchor="middle" font-size="12" fill="white" font-weight="bold">mmap_lock</text>
+  <text x="112" y="484" text-anchor="middle" font-size="10" fill="#B3D1F0">rwsem, per-mm</text>
+  <text x="195" y="472" font-size="16" fill="#9E9E9E">→</text>
+
+  <rect x="210" y="452" width="155" height="34" rx="4" fill="#00796B"/>
+  <text x="287" y="470" text-anchor="middle" font-size="12" fill="white" font-weight="bold">anon_vma lock</text>
+  <text x="287" y="484" text-anchor="middle" font-size="10" fill="#B2DFDB">rwsem, per-anon_vma</text>
+  <text x="370" y="472" font-size="16" fill="#9E9E9E">→</text>
+
+  <rect x="385" y="452" width="155" height="34" rx="4" fill="#E65100"/>
+  <text x="462" y="470" text-anchor="middle" font-size="12" fill="white" font-weight="bold">page_table_lock</text>
+  <text x="462" y="484" text-anchor="middle" font-size="10" fill="#FFCCBC">spinlock, per-PTE page</text>
+  <text x="545" y="472" font-size="16" fill="#9E9E9E">→</text>
+
+  <rect x="560" y="452" width="155" height="34" rx="4" fill="#37474F"/>
+  <text x="637" y="470" text-anchor="middle" font-size="12" fill="white" font-weight="bold">PTE entry (cmpxchg)</text>
+  <text x="637" y="484" text-anchor="middle" font-size="10" fill="#B0BEC5">atomic, per-PTE</text>
+  <text x="720" y="472" font-size="16" fill="#9E9E9E">→</text>
+
+  <rect x="735" y="452" width="130" height="34" rx="4" fill="#9E9E9E"/>
+  <text x="800" y="470" text-anchor="middle" font-size="12" fill="white" font-weight="bold">TLB flush IPI</text>
+  <text x="800" y="484" text-anchor="middle" font-size="10" fill="#F5F5F5">after PTE clear</text>
+
+  <text x="450" y="525" text-anchor="middle" font-size="12" fill="#616161">Rule: never acquire inner lock while holding outer lock in read mode for write ops. Deadlock avoided by strict ordering.</text>
+</svg>
+<figcaption><strong>Figure 9.6:</strong> Parallel page table operations via Linux fine-grained lock hierarchy. Naive single global lock serialises all CPUs; Linux uses mmap_lock (read-held by all) plus per-PTE-page spinlocks to allow independent concurrent modifications. The five-level hierarchy (mmap_lock → anon_vma lock → page_table_lock → PTE cmpxchg → TLB IPI) must be acquired in strict order to prevent deadlock.</figcaption>
+</figure>
+
 <div class="sourceCode" id="cb100"><pre
 class="sourceCode c"><code class="sourceCode c"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="co">// OLD: Serial page fault handling</span></span>
 <span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> handle_page_fault<span class="op">(</span><span class="dt">unsigned</span> <span class="dt">long</span> address<span class="op">)</span> <span class="op">{</span></span>
@@ -3479,6 +3621,119 @@ than evicting to disk, effectively extending memory capacity at the cost
 of CPU cycles.</p>
 <p>Linux's zswap provides a compressed cache layer between RAM and
 swap:</p>
+
+<figure id="fig-9-7">
+<svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#212121"/></marker>
+    <marker id="arr-b" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
+    <marker id="arr-t" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#00796B"/></marker>
+    <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/></filter>
+  </defs>
+
+  <text x="30" y="36" font-size="20" font-weight="bold" fill="#212121">Memory Compression Integration: zRAM and zswap Pipeline</text>
+  <text x="30" y="57" font-size="13" fill="#616161">Linux memory compression reduces effective swap latency from ~10 ms (disk) to ~100 µs (CPU decompression).</text>
+
+  <!-- TOP SECTION: zRAM flow -->
+  <rect x="20" y="68" width="860" height="200" rx="8" fill="#F5F5F5" stroke="#1565C0" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="440" y="92" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">zRAM: Compressed RAM Swap Device</text>
+
+  <!-- Process -->
+  <rect x="40" y="105" width="120" height="50" rx="6" fill="#1565C0" filter="url(#sh)"/>
+  <text x="100" y="127" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Process</text>
+  <text x="100" y="145" text-anchor="middle" font-size="11" fill="#B3D1F0">anonymous page</text>
+
+  <line x1="160" y1="130" x2="195" y2="130" stroke="#1565C0" stroke-width="2" marker-end="url(#arr-b)"/>
+  <text x="177" y="124" text-anchor="middle" font-size="11" fill="#616161">evict</text>
+
+  <!-- kswapd -->
+  <rect x="195" y="105" width="130" height="50" rx="6" fill="#37474F" filter="url(#sh)"/>
+  <text x="260" y="127" text-anchor="middle" font-size="13" fill="white" font-weight="bold">kswapd</text>
+  <text x="260" y="145" text-anchor="middle" font-size="11" fill="#B0BEC5">select victim page</text>
+
+  <line x1="325" y1="130" x2="360" y2="130" stroke="#1565C0" stroke-width="2" marker-end="url(#arr-b)"/>
+  <text x="342" y="124" text-anchor="middle" font-size="11" fill="#616161">compress</text>
+
+  <!-- Compressor -->
+  <rect x="360" y="105" width="140" height="50" rx="6" fill="#00796B" filter="url(#sh)"/>
+  <text x="430" y="124" text-anchor="middle" font-size="13" fill="white" font-weight="bold">LZ4 / Zstd</text>
+  <text x="430" y="142" text-anchor="middle" font-size="11" fill="#B2DFDB">4 KB → ~1–2 KB</text>
+  <text x="430" y="155" text-anchor="middle" font-size="11" fill="#B2DFDB">~5 µs CPU time</text>
+
+  <line x1="500" y1="130" x2="535" y2="130" stroke="#1565C0" stroke-width="2" marker-end="url(#arr-b)"/>
+  <text x="517" y="124" text-anchor="middle" font-size="11" fill="#616161">store</text>
+
+  <!-- zRAM pool -->
+  <rect x="535" y="95" width="160" height="70" rx="6" fill="#1565C0" filter="url(#sh)"/>
+  <text x="615" y="118" text-anchor="middle" font-size="13" fill="white" font-weight="bold">zRAM Pool</text>
+  <text x="615" y="136" text-anchor="middle" font-size="11" fill="#B3D1F0">(compressed, in RAM)</text>
+  <text x="615" y="153" text-anchor="middle" font-size="12" fill="white">50–70% compression</text>
+
+  <line x1="695" y1="130" x2="730" y2="130" stroke="#1565C0" stroke-width="2" marker-end="url(#arr-b)"/>
+
+  <!-- PTE swap entry -->
+  <rect x="730" y="105" width="140" height="50" rx="6" fill="#9E9E9E" filter="url(#sh)"/>
+  <text x="800" y="125" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Swap PTE</text>
+  <text x="800" y="143" text-anchor="middle" font-size="11" fill="#F5F5F5">P=0, swap offset</text>
+
+  <!-- Recovery arrow -->
+  <path d="M 800 155 Q 800 185 430 185 Q 100 185 100 155" fill="none" stroke="#00796B" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-t)"/>
+  <text x="450" y="180" text-anchor="middle" font-size="11" fill="#00796B">page fault → decompress (~100 µs) → restore PTE</text>
+
+  <!-- BOTTOM SECTION: zswap comparison -->
+  <rect x="20" y="285" width="860" height="195" rx="8" fill="#FFF8E1" stroke="#E65100" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="440" y="308" text-anchor="middle" font-size="14" font-weight="bold" fill="#E65100">zswap: Compressed Cache in Front of Block Swap</text>
+
+  <!-- zswap flow -->
+  <rect x="40" y="320" width="110" height="50" rx="6" fill="#1565C0" filter="url(#sh)"/>
+  <text x="95" y="340" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Page out</text>
+  <text x="95" y="357" text-anchor="middle" font-size="11" fill="#B3D1F0">anon page</text>
+
+  <line x1="150" y1="345" x2="185" y2="345" stroke="#E65100" stroke-width="2" marker-end="url(#arr)"/>
+
+  <rect x="185" y="320" width="130" height="50" rx="6" fill="#E65100" filter="url(#sh)"/>
+  <text x="250" y="340" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Compress</text>
+  <text x="250" y="357" text-anchor="middle" font-size="11" fill="#FFCCBC">LZ4 / LZO-RLE</text>
+
+  <line x1="315" y1="345" x2="350" y2="345" stroke="#E65100" stroke-width="2" marker-end="url(#arr)"/>
+
+  <rect x="350" y="310" width="160" height="70" rx="6" fill="#E65100" filter="url(#sh)"/>
+  <text x="430" y="333" text-anchor="middle" font-size="13" fill="white" font-weight="bold">zswap Pool</text>
+  <text x="430" y="350" text-anchor="middle" font-size="11" fill="#FFCCBC">(RAM, compressed)</text>
+  <text x="430" y="367" text-anchor="middle" font-size="11" fill="#FFCCBC">limited to N% of RAM</text>
+
+  <line x1="510" y1="345" x2="545" y2="345" stroke="#E65100" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="527" y="337" text-anchor="middle" font-size="10" fill="#E65100">pool full</text>
+
+  <rect x="545" y="320" width="130" height="50" rx="6" fill="#37474F" filter="url(#sh)"/>
+  <text x="610" y="340" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Decompress</text>
+  <text x="610" y="357" text-anchor="middle" font-size="11" fill="#B0BEC5">→ block device</text>
+
+  <line x1="675" y1="345" x2="710" y2="345" stroke="#37474F" stroke-width="2" marker-end="url(#arr)"/>
+
+  <rect x="710" y="320" width="150" height="50" rx="6" fill="#9E9E9E" filter="url(#sh)"/>
+  <text x="785" y="340" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Disk / SSD</text>
+  <text x="785" y="357" text-anchor="middle" font-size="11" fill="#F5F5F5">~10 ms latency</text>
+
+  <!-- Latency comparison -->
+  <rect x="40" y="390" width="820" height="70" rx="6" fill="white" stroke="#9E9E9E" stroke-width="1"/>
+  <text x="450" y="412" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Latency Comparison (4 KB page fault recovery)</text>
+  <text x="80" y="435" font-size="13" fill="#1565C0" font-weight="bold">zRAM hit:</text>
+  <text x="170" y="435" font-size="13" fill="#212121">~50–200 µs (decompress in RAM)</text>
+  <text x="400" y="435" font-size="13" fill="#E65100" font-weight="bold">zswap hit:</text>
+  <text x="490" y="435" font-size="13" fill="#212121">~100–500 µs (decompress in RAM)</text>
+  <text x="720" y="435" font-size="13" fill="#37474F" font-weight="bold">Disk miss:</text>
+  <text x="810" y="435" font-size="13" fill="#D32F2F">~10 ms</text>
+  <text x="80" y="453" font-size="13" fill="#616161">zRAM: no disk. 50–70% compression. Ideal for containers/VMs.</text>
+  <text x="490" y="453" font-size="13" fill="#616161">zswap: disk as final tier. Used by Android, ChromeOS, cloud VMs.</text>
+
+  <!-- Footer -->
+  <text x="450" y="508" text-anchor="middle" font-size="12" fill="#616161">Both integrate with Linux swap subsystem via swap PTE entries. PTE P=0 signals compressed page; fault handler decompresses before re-populating.</text>
+  <text x="450" y="528" text-anchor="middle" font-size="12" fill="#616161">zRAM tuning: zram_writeback, comp_algorithm sysfs. zswap: /sys/module/zswap/parameters/. Linux 5.x+ supports both simultaneously.</text>
+</svg>
+<figcaption><strong>Figure 9.7:</strong> Memory compression pipeline: zRAM and zswap. zRAM creates a compressed RAM block device (no disk); page eviction compresses 4 KB → ~1–2 KB in ~5 µs and stores it in RAM. Fault recovery decompresses in ~100 µs — 100× faster than disk. zswap adds a compressed RAM cache in front of block swap, evicting to disk only when the zswap pool is full.</figcaption>
+</figure>
+
 <pre><code>Application
     ↓
 Page Cache (uncompressed)

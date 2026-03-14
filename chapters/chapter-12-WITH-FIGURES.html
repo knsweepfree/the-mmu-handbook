@@ -822,6 +822,84 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>AI training transforms this equation. GPT-3 with 175 billion parameters requires 350 GB for parameters alone, plus 700 GB each for momentum and variance (AdamW optimizer), and 50-100 GB for activations. Total working set: 1,800 GB. The same 512-entry TLB now covers only 1 GB of 1,800 GB—0.055% coverage. TLB miss rate: 99.945%.</p>
 
+<figure id="fig-12-1">
+<svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/></filter>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#212121"/></marker>
+  </defs>
+
+  <text x="30" y="36" font-size="20" font-weight="bold" fill="#212121">The Six Drivers of AI Memory System Stress</text>
+  <text x="30" y="57" font-size="13" fill="#616161">These six properties of large-scale AI workloads fundamentally challenge assumptions built into conventional MMU design.</text>
+
+  <!-- Central hub -->
+  <ellipse cx="450" cy="300" rx="90" ry="56" fill="#1565C0" filter="url(#sh)"/>
+  <text x="450" y="294" text-anchor="middle" font-size="14" fill="white" font-weight="bold">AI/ML</text>
+  <text x="450" y="312" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Memory</text>
+  <text x="450" y="330" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Pressure</text>
+
+  <!-- Driver 1: Working Set Size (top left) -->
+  <rect x="22" y="60" width="230" height="110" rx="8" fill="#E3F2FD" stroke="#1565C0" stroke-width="2" filter="url(#sh)"/>
+  <text x="137" y="84" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">① Working Set Size</text>
+  <text x="137" y="104" text-anchor="middle" font-size="13" fill="#212121">GPT-3: 1,800 GB</text>
+  <text x="137" y="122" text-anchor="middle" font-size="13" fill="#212121">GPT-4: ~5,000 GB</text>
+  <text x="137" y="140" text-anchor="middle" font-size="12" fill="#D32F2F">L2 TLB covers 0.0002%</text>
+  <text x="137" y="157" text-anchor="middle" font-size="11" fill="#616161">of working set w/ 4 KB pages</text>
+  <line x1="252" y1="120" x2="362" y2="245" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Driver 2: GPU Count (top center) -->
+  <rect x="323" y="60" width="254" height="110" rx="8" fill="#E3F2FD" stroke="#1565C0" stroke-width="2" filter="url(#sh)"/>
+  <text x="450" y="84" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">② GPU Count per Job</text>
+  <text x="450" y="104" text-anchor="middle" font-size="13" fill="#212121">Training: 1,000 – 10,000 GPUs</text>
+  <text x="450" y="122" text-anchor="middle" font-size="13" fill="#212121">Inference: 8 – 256 GPUs</text>
+  <text x="450" y="140" text-anchor="middle" font-size="12" fill="#D32F2F">TLB shootdown: O(N) scaling</text>
+  <text x="450" y="157" text-anchor="middle" font-size="11" fill="#616161">each mapping change stalls all GPUs</text>
+  <line x1="450" y1="170" x2="450" y2="244" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Driver 3: Bandwidth (top right) -->
+  <rect x="648" y="60" width="230" height="110" rx="8" fill="#E3F2FD" stroke="#1565C0" stroke-width="2" filter="url(#sh)"/>
+  <text x="763" y="84" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">③ Memory Bandwidth</text>
+  <text x="763" y="104" text-anchor="middle" font-size="13" fill="#212121">H100 SXM: 3.35 TB/s</text>
+  <text x="763" y="122" text-anchor="middle" font-size="13" fill="#212121">MI300X HBM: 5.3 TB/s</text>
+  <text x="763" y="140" text-anchor="middle" font-size="12" fill="#D32F2F">TLB miss penalty consumes</text>
+  <text x="763" y="157" text-anchor="middle" font-size="11" fill="#616161">90% of available BW</text>
+  <line x1="648" y1="120" x2="538" y2="245" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Driver 4: Multi-tenancy (bottom left) -->
+  <rect x="22" y="410" width="230" height="110" rx="8" fill="#FFF3E0" stroke="#E65100" stroke-width="2" filter="url(#sh)"/>
+  <text x="137" y="434" text-anchor="middle" font-size="13" font-weight="bold" fill="#E65100">④ Multi-Tenancy</text>
+  <text x="137" y="454" text-anchor="middle" font-size="13" fill="#212121">8–32 tenants per GPU</text>
+  <text x="137" y="472" text-anchor="middle" font-size="13" fill="#212121">(MIG / MPS / vGPU)</text>
+  <text x="137" y="490" text-anchor="middle" font-size="12" fill="#D32F2F">Shared TLB = timing</text>
+  <text x="137" y="507" text-anchor="middle" font-size="11" fill="#616161">side-channel between VMs</text>
+  <line x1="252" y1="460" x2="362" y2="353" stroke="#E65100" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Driver 5: Virtualization (bottom center) -->
+  <rect x="323" y="410" width="254" height="110" rx="8" fill="#FFF3E0" stroke="#E65100" stroke-width="2" filter="url(#sh)"/>
+  <text x="450" y="434" text-anchor="middle" font-size="13" font-weight="bold" fill="#E65100">⑤ Virtualization Overhead</text>
+  <text x="450" y="454" text-anchor="middle" font-size="13" fill="#212121">Cloud GPU: always virtualised</text>
+  <text x="450" y="472" text-anchor="middle" font-size="13" fill="#212121">2-stage walk: 25 accesses</text>
+  <text x="450" y="490" text-anchor="middle" font-size="12" fill="#D32F2F">Page fault storm at</text>
+  <text x="450" y="507" text-anchor="middle" font-size="11" fill="#616161">model load time: 10–100s</text>
+  <line x1="450" y1="410" x2="450" y2="356" stroke="#E65100" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Driver 6: Access Patterns (bottom right) -->
+  <rect x="648" y="410" width="230" height="110" rx="8" fill="#FFF3E0" stroke="#E65100" stroke-width="2" filter="url(#sh)"/>
+  <text x="763" y="434" text-anchor="middle" font-size="13" font-weight="bold" fill="#E65100">⑥ Access Patterns</text>
+  <text x="763" y="454" text-anchor="middle" font-size="13" fill="#212121">Attention: O(N²) random</text>
+  <text x="763" y="472" text-anchor="middle" font-size="13" fill="#212121">Weight: streaming sequential</text>
+  <text x="763" y="490" text-anchor="middle" font-size="12" fill="#D32F2F">Conventional TLB prefetch</text>
+  <text x="763" y="507" text-anchor="middle" font-size="11" fill="#616161">ineffective for attention layers</text>
+  <line x1="648" y1="460" x2="538" y2="353" stroke="#E65100" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Center annotation -->
+  <text x="450" y="406" text-anchor="middle" font-size="12" fill="#1565C0" font-weight="bold">① ② ③ stress</text>
+  <text x="450" y="194" text-anchor="middle" font-size="12" fill="#E65100" font-weight="bold">④ ⑤ ⑥ stress</text>
+</svg>
+<figcaption><strong>Figure 12.1:</strong> The six drivers of AI memory system stress. Three scale-related drivers (working set size, GPU count, memory bandwidth) and three operational drivers (multi-tenancy, virtualisation overhead, irregular access patterns) combine to expose fundamental mismatches between conventional MMU design assumptions and large-scale AI workload requirements.</figcaption>
+</figure>
+
+
 <p>The quantified impact is severe. TLB miss penalty is 200ns for a 4-level page walk. With baseline HBM3 latency of 100ns, effective latency becomes 299.89ns (0.055% × 100ns + 99.945% × 300ns), creating a 3× slowdown compared to perfect TLB coverage. This is not marginal—TLB effectiveness has completely collapsed. The MMU was designed for working sets of 1-10 GB. AI models are 100-1,000× larger.</p>
 
 <h3>Driver 2: Device Count (1 → 1,000+)</h3>
@@ -883,6 +961,155 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <p><strong>Component 1: TLB Lookup Latency.</strong> Every virtual address requires translation. TLB hits cost 2 cycles (overlapped with L1 cache). TLB misses cost 50-200 cycles for 4-level page table walks (200ns at 2.5 GHz). With 95% hit rate, effective latency becomes 9.4 cycles average (0.95 × 2 + 0.05 × 150), creating 4.7× slowdown per memory access.</p>
 
 <p>At AI scale with 90% bandwidth utilization, this compounds. H100 GPUs perform 100 billion memory accesses per second. With 5% TLB miss rate (using 2MB pages), 5 billion misses occur per second. Wasted cycles: 750 billion per second. At 2.5 GHz, this represents 300 wasted seconds per second—impossible without pipelining, but resulting in measured 20-30% effective overhead.</p>
+
+<figure id="fig-12-2">
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/></filter>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#212121"/></marker>
+  </defs>
+
+  <text x="30" y="36" font-size="20" font-weight="bold" fill="#212121">Address Translation Overhead: Conventional MMU vs AI Workloads</text>
+  <text x="30" y="57" font-size="13" fill="#616161">Breakdown of where cycles are lost to address translation in representative AI training and inference workloads.</text>
+
+  <!-- Left: Stacked bar chart - cost breakdown -->
+  <rect x="20" y="72" width="500" height="370" rx="8" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="270" y="98" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Translation Cost Breakdown per 1,000 Memory Accesses</text>
+
+  <!-- Y-axis labels -->
+  <text x="58" y="138" text-anchor="end" font-size="12" fill="#616161">100%</text>
+  <text x="58" y="188" text-anchor="end" font-size="12" fill="#616161">80%</text>
+  <text x="58" y="238" text-anchor="end" font-size="12" fill="#616161">60%</text>
+  <text x="58" y="288" text-anchor="end" font-size="12" fill="#616161">40%</text>
+  <text x="58" y="338" text-anchor="end" font-size="12" fill="#616161">20%</text>
+  <text x="58" y="388" text-anchor="end" font-size="12" fill="#616161">0%</text>
+
+  <!-- Grid lines -->
+  <line x1="64" y1="135" x2="500" y2="135" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="64" y1="185" x2="500" y2="185" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="64" y1="235" x2="500" y2="235" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="64" y1="285" x2="500" y2="285" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="64" y1="335" x2="500" y2="335" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="64" y1="385" x2="500" y2="385" stroke="#E0E0E0" stroke-width="1"/>
+
+  <!-- Bar 1: CPU workload (web server) — baseline -->
+  <text x="125" y="400" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">Web Server</text>
+  <text x="125" y="415" text-anchor="middle" font-size="11" fill="#616161">(baseline)</text>
+  <!-- TLB hit: 70% = 175px tall, from 385 -->
+  <rect x="80" y="210" width="90" height="175" fill="#1565C0" opacity="0.9"/>
+  <!-- TLB miss + walk: 15% = 37.5px -->
+  <rect x="80" y="172" width="90" height="38" fill="#00796B" opacity="0.9"/>
+  <!-- Page walk overhead: 15% = 37.5px -->
+  <rect x="80" y="135" width="90" height="37" fill="#E65100" opacity="0.9"/>
+  <text x="125" y="302" text-anchor="middle" font-size="12" fill="white" font-weight="bold">70%</text>
+  <text x="125" y="194" text-anchor="middle" font-size="11" fill="white">15%</text>
+  <text x="125" y="155" text-anchor="middle" font-size="11" fill="white">15%</text>
+
+  <!-- Bar 2: LLM Inference (4KB pages) -->
+  <text x="240" y="400" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">LLM Infer.</text>
+  <text x="240" y="415" text-anchor="middle" font-size="11" fill="#616161">(4 KB pages)</text>
+  <!-- TLB hit: 30% = 75px -->
+  <rect x="195" y="310" width="90" height="75" fill="#1565C0" opacity="0.9"/>
+  <!-- Walk overhead: 40% = 100px -->
+  <rect x="195" y="210" width="90" height="100" fill="#00796B" opacity="0.9"/>
+  <!-- Page fault overhead: 30% = 75px -->
+  <rect x="195" y="135" width="90" height="75" fill="#E65100" opacity="0.9"/>
+  <text x="240" y="355" text-anchor="middle" font-size="12" fill="white" font-weight="bold">30%</text>
+  <text x="240" y="262" text-anchor="middle" font-size="11" fill="white" font-weight="bold">40%</text>
+  <text x="240" y="175" text-anchor="middle" font-size="11" fill="white" font-weight="bold">30%</text>
+
+  <!-- Bar 3: LLM Inference (2MB pages) -->
+  <text x="355" y="400" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">LLM Infer.</text>
+  <text x="355" y="415" text-anchor="middle" font-size="11" fill="#1B5E20">(2 MB pages)</text>
+  <!-- TLB hit: 88% = 220px -->
+  <rect x="310" y="165" width="90" height="220" fill="#1565C0" opacity="0.9"/>
+  <!-- Walk: 7% = 17.5px -->
+  <rect x="310" y="147" width="90" height="18" fill="#00796B" opacity="0.9"/>
+  <!-- Fault: 5% = 12.5px -->
+  <rect x="310" y="135" width="90" height="12" fill="#E65100" opacity="0.9"/>
+  <text x="355" y="285" text-anchor="middle" font-size="12" fill="white" font-weight="bold">88%</text>
+  <text x="355" y="157" text-anchor="middle" font-size="10" fill="white">7%</text>
+
+  <!-- Bar 4: Training (100K GPU) -->
+  <text x="468" y="400" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">Train.</text>
+  <text x="468" y="415" text-anchor="middle" font-size="11" fill="#616161">(distributed)</text>
+  <!-- TLB hit: 25% = 62px -->
+  <rect x="422" y="323" width="90" height="62" fill="#1565C0" opacity="0.9"/>
+  <!-- Walk: 35% = 87px -->
+  <rect x="422" y="236" width="90" height="87" fill="#00796B" opacity="0.9"/>
+  <!-- Shootdown/fault: 40% = 100px -->
+  <rect x="422" y="136" width="90" height="100" fill="#E65100" opacity="0.9"/>
+  <text x="468" y="360" text-anchor="middle" font-size="12" fill="white" font-weight="bold">25%</text>
+  <text x="468" y="282" text-anchor="middle" font-size="11" fill="white" font-weight="bold">35%</text>
+  <text x="468" y="188" text-anchor="middle" font-size="11" fill="white" font-weight="bold">40%</text>
+
+  <!-- Legend -->
+  <rect x="60" y="430" width="16" height="14" fill="#1565C0"/>
+  <text x="82" y="443" font-size="12" fill="#212121">TLB hits (useful work)</text>
+  <rect x="230" y="430" width="16" height="14" fill="#00796B"/>
+  <text x="252" y="443" font-size="12" fill="#212121">TLB miss + page walk</text>
+  <rect x="400" y="430" width="16" height="14" fill="#E65100"/>
+  <text x="422" y="443" font-size="12" fill="#212121">Fault / shootdown overhead</text>
+
+  <!-- Right: Breakdown table -->
+  <rect x="540" y="72" width="340" height="370" rx="8" fill="white" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="710" y="98" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Root Causes of Translation Overhead</text>
+
+  <!-- Headers -->
+  <rect x="540" y="105" width="340" height="28" rx="0" fill="#1565C0"/>
+  <text x="650" y="124" text-anchor="middle" font-size="12" fill="white" font-weight="bold">Cause</text>
+  <text x="820" y="124" text-anchor="middle" font-size="12" fill="white" font-weight="bold">Impact</text>
+
+  <!-- Rows -->
+  <rect x="540" y="133" width="340" height="36" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="548" y="148" font-size="12" fill="#212121">Working set &gt; TLB reach</text>
+  <text x="548" y="163" font-size="11" fill="#616161">(4KB pages, 1.5TB model)</text>
+  <text x="820" y="155" text-anchor="middle" font-size="12" fill="#D32F2F" font-weight="bold">25–40%</text>
+  <text x="820" y="165" text-anchor="middle" font-size="10" fill="#D32F2F">miss rate</text>
+
+  <rect x="540" y="169" width="340" height="36" fill="white" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="548" y="184" font-size="12" fill="#212121">Distributed shootdown</text>
+  <text x="548" y="199" font-size="11" fill="#616161">(10K GPUs × per-page TLB flush)</text>
+  <text x="820" y="191" text-anchor="middle" font-size="12" fill="#D32F2F" font-weight="bold">15–25%</text>
+  <text x="820" y="201" text-anchor="middle" font-size="10" fill="#D32F2F">of training time</text>
+
+  <rect x="540" y="205" width="340" height="36" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="548" y="220" font-size="12" fill="#212121">Virtualisation overhead</text>
+  <text x="548" y="235" font-size="11" fill="#616161">(2-stage walk: 25 accesses vs 5)</text>
+  <text x="820" y="227" text-anchor="middle" font-size="12" fill="#D32F2F" font-weight="bold">5× slower</text>
+  <text x="820" y="237" text-anchor="middle" font-size="10" fill="#D32F2F">page walk</text>
+
+  <rect x="540" y="241" width="340" height="36" fill="white" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="548" y="256" font-size="12" fill="#212121">Attention layer random access</text>
+  <text x="548" y="271" font-size="11" fill="#616161">(O(N²), no spatial locality)</text>
+  <text x="820" y="263" text-anchor="middle" font-size="12" fill="#D32F2F" font-weight="bold">Prefetch</text>
+  <text x="820" y="273" text-anchor="middle" font-size="10" fill="#D32F2F">ineffective</text>
+
+  <rect x="540" y="277" width="340" height="36" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="548" y="292" font-size="12" fill="#212121">Page fault storm at startup</text>
+  <text x="548" y="307" font-size="11" fill="#616161">(loading 1.5TB checkpoint)</text>
+  <text x="820" y="299" text-anchor="middle" font-size="12" fill="#D32F2F" font-weight="bold">30–120s</text>
+  <text x="820" y="309" text-anchor="middle" font-size="10" fill="#D32F2F">initialisation</text>
+
+  <rect x="540" y="313" width="340" height="36" fill="white" stroke="#E0E0E0" stroke-width="0.5"/>
+  <text x="548" y="328" font-size="12" fill="#212121">Multi-tenancy isolation cost</text>
+  <text x="548" y="343" font-size="11" fill="#616161">(full TLB flush per tenant switch)</text>
+  <text x="820" y="335" text-anchor="middle" font-size="12" fill="#D32F2F" font-weight="bold">8–12%</text>
+  <text x="820" y="345" text-anchor="middle" font-size="10" fill="#D32F2F">throughput loss</text>
+
+  <!-- Solution box -->
+  <rect x="540" y="355" width="340" height="70" rx="6" fill="#E8F5E9" stroke="#00796B" stroke-width="1.5"/>
+  <text x="710" y="375" text-anchor="middle" font-size="13" font-weight="bold" fill="#00796B">Mitigation: 2 MB Huge Pages</text>
+  <text x="555" y="395" font-size="12" fill="#212121">✓ 512× TLB reach increase</text>
+  <text x="555" y="412" font-size="12" fill="#212121">✓ Reduces walk overhead 25% → 7%</text>
+
+  <!-- Footer -->
+  <text x="450" y="480" text-anchor="middle" font-size="12" fill="#616161">Data based on: Ausavarungnirun et al. (MICRO 2017), Maruf et al. (ATC 2020), and production measurements from GRIT (OSDI 2021).</text>
+  <text x="450" y="500" text-anchor="middle" font-size="12" fill="#616161">Exact percentages vary by model size, hardware, page size configuration, and whether IOMMU and virtualisation are enabled.</text>
+</svg>
+<figcaption><strong>Figure 12.2:</strong> Address translation overhead breakdown across workloads. LLM inference with 4 KB pages wastes 70% of cycles on TLB misses and page walks; switching to 2 MB pages reduces this to ~12% (88% TLB hit rate). Distributed training loses an additional 40% to shootdown overhead. Data based on Ausavarungnirun et al. (MICRO 2017) and GRIT (OSDI 2021).</figcaption>
+</figure>
+
 
 <p><strong>Component 2: Page Fault Handling.</strong> GPU page faults cost approximately 50,000 cycles: 10,000 for context switch to OS, 5,000 for physical page allocation, 1,000 for page table updates, 500 for TLB flush, and 10,000 to resume application. Total: 20µs per fault.</p>
 
@@ -968,7 +1195,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 
 <h2 id="section-12.4">12.4 Multi-GPU TLB Coordination - The O(N) Scaling Problem</h2>
-<figure id="fig-12-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<figure id="fig-12-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
 <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
 <marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#BF616A"/></marker></defs>
@@ -1038,7 +1265,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <text x="680" y="468" text-anchor="middle" font-size="13" fill="#212121">128</text>
 <text x="680" y="486" text-anchor="middle" font-size="13" fill="#212121">~25,000</text>
 <text x="680" y="504" text-anchor="middle" font-size="13" fill="#BF616A">~12% (unmitigated)</text>
-</svg></div><figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.1:</strong> Multi-GPU TLB coordination: the O(N) shootdown scaling problem. When GPUs share a unified virtual address space via NVLink/NVSwitch, unmapping any page requires broadcasting TLB invalidations to all N-1 peer GPUs and awaiting acknowledgements. At 128 GPUs this adds ~12% training overhead without mitigation. Solutions include lazy batched unmaps, epoch-based reclaim, and per-process PASID address spaces that reduce the invalidation fan-out.</figcaption></figure>
+</svg></div><figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.3:</strong> Multi-GPU TLB coordination: the O(N) shootdown scaling problem. When GPUs share a unified virtual address space via NVLink/NVSwitch, unmapping any page requires broadcasting TLB invalidations to all N-1 peer GPUs and awaiting acknowledgements. At 128 GPUs this adds ~12% training overhead without mitigation. Solutions include lazy batched unmaps, epoch-based reclaim, and per-process PASID address spaces that reduce the invalidation fan-out.</figcaption></figure>
 
 <p>Modern AI training distributes computation across hundreds or thousands of GPUs sharing a unified virtual address space. This creates a fundamental challenge: when one GPU modifies its page tables, all other GPUs caching those translations must be notified. The naive serial protocol—sending invalidation messages one GPU at a time—scales O(N) and becomes the dominant bottleneck at scale. This section examines five approaches to the TLB coherence problem, from measurement studies establishing the baseline cost to both hardware and software solutions that eliminate the O(N) scaling bottleneck.</p>
 
@@ -2812,7 +3039,7 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <p>Cloud providers want to subdivide GPUs among multiple customers to maximize revenue. A single GPU serving 7 customers generates 7× revenue compared to dedicating the entire GPU to one customer. But multi-tenancy requires perfect isolation: Customer A must not be able to observe, infer, or influence Customer B's computation.</p>
 
-<figure id="fig-12-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-12-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
 <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
@@ -2910,7 +3137,7 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
   <text x="530" y="550" font-size="12" fill="#616161">Sources: TunneLs (MICRO 2023), CryptoMMU (HPCA 2023)</text>
 </svg>
   </div>
-  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.2:</strong> Multi-tenancy security: shared TLBs expose a timing side-channel (TunneLs attack) where Tenant B measures hit/miss latency to infer Tenant A's access patterns and recover cryptographic keys. PASID-partitioned TLBs enforce per-tenant hardware isolation, eliminating the covert channel; CryptoMMU additionally encrypts physical addresses per PASID for defence-in-depth at ~3% overhead.</figcaption>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.4:</strong> Multi-tenancy security: shared TLBs expose a timing side-channel (TunneLs attack) where Tenant B measures hit/miss latency to infer Tenant A's access patterns and recover cryptographic keys. PASID-partitioned TLBs enforce per-tenant hardware isolation, eliminating the covert channel; CryptoMMU additionally encrypts physical addresses per PASID for defence-in-depth at ~3% overhead.</figcaption>
 </figure>
 
 
@@ -3748,7 +3975,7 @@ Result: ~18% throughput reduction (measured)</code></pre>
 
 <p>GPU virtualization—running multiple virtual machines sharing a physical GPU—enables flexible resource allocation for cloud providers. Traditional CPU virtualization is mature (5-15% overhead) and widely deployed. GPU virtualization, however, faces a fundamental challenge: the page fault storm.</p>
 
-<figure id="fig-12-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-12-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
 <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
@@ -3838,7 +4065,7 @@ Result: ~18% throughput reduction (measured)</code></pre>
   <text x="590" y="540" font-size="12" fill="#616161">Sources: HPCA 2023 (DMT), MICRO 2022 (HugeGPT)</text>
 </svg>
   </div>
-  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.3:</strong> GPU virtualization fault storm: naïve on-demand fault handling serializes 1,024 concurrent GPU thread faults through the host OS, stalling the GPU for ~245 ms and losing 75% throughput. DMT with cuMemPrefetchAsync eliminates faults entirely by pre-mapping all pages before kernel launch; HugeGPT coalesces 4 KB pages into 2 MB huge pages for 512× TLB reach, reducing overhead to ~3%.</figcaption>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.5:</strong> GPU virtualization fault storm: naïve on-demand fault handling serializes 1,024 concurrent GPU thread faults through the host OS, stalling the GPU for ~245 ms and losing 75% throughput. DMT with cuMemPrefetchAsync eliminates faults entirely by pre-mapping all pages before kernel launch; HugeGPT coalesces 4 KB pages into 2 MB huge pages for 512× TLB reach, reducing overhead to ~3%.</figcaption>
 </figure>
 
 
@@ -4884,7 +5111,7 @@ HugeGPT:
 
 <p>This chapter has examined three scaling challenges—coherence, isolation, virtualization—but a common pattern emerges: MMU architecture for AI systems is fundamentally about choosing positions in three-dimensional trade-off space.</p>
 
-<figure id="fig-12-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-12-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
 <svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
@@ -5006,7 +5233,7 @@ HugeGPT:
   <text x="450" y="507" text-anchor="middle" font-size="12" fill="#A07830">→ Lower overhead, more HW/SW change required →</text>
 </svg>
   </div>
-  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.4:</strong> Chapter synthesis: MMU design for AI workloads involves three independent trade-off dimensions. Coherence (top-left) trades flexibility for overhead — XLA eliminates dynamic remapping entirely at 0% cost. Isolation (top-right) shows hardware PASID beats software TLB flush in both security and performance. Virtualization fault strategy (bottom) shows a progression from 75% throughput loss (naïve) to ~3% overhead (HugeGPT), with increasing hardware and software complexity required.</figcaption>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.6:</strong> Chapter synthesis: MMU design for AI workloads involves three independent trade-off dimensions. Coherence (top-left) trades flexibility for overhead — XLA eliminates dynamic remapping entirely at 0% cost. Isolation (top-right) shows hardware PASID beats software TLB flush in both security and performance. Virtualization fault strategy (bottom) shows a progression from 75% throughput loss (naïve) to ~3% overhead (HugeGPT), with increasing hardware and software complexity required.</figcaption>
 </figure>
 
 

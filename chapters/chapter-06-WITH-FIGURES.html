@@ -1855,6 +1855,98 @@ uint64_t make_execute_only_pte(uint64_t phys_addr) {
 <p>The No-Execute bit is one of the most important security features in modern processors. By preventing code execution from data pages, it defeats entire classes of exploits that have plagued computer security for decades.</p>
 <h3 id="the-code-injection-problem">The Code Injection Problem</h3>
 <p>Before the NX bit, all writable memory was also executable. This created a fundamental vulnerability:</p>
+
+<figure id="fig-6-1">
+<svg width="900" height="620" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#212121"/></marker>
+    <marker id="arr-r" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#D32F2F"/></marker>
+    <marker id="arr-g" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#2E7D32"/></marker>
+    <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/></filter>
+  </defs>
+
+  <text x="30" y="36" font-size="20" font-weight="bold" fill="#212121">NX / SMEP / SMAP / PAN Enforcement: Memory Access Decision Flow</text>
+  <text x="30" y="58" font-size="13" fill="#616161">Checked by CPU on every memory access. Failure raises a fault before the TLB is consulted.</text>
+
+  <!-- START node -->
+  <ellipse cx="450" cy="95" rx="130" ry="28" fill="#1565C0" filter="url(#sh)"/>
+  <text x="450" y="100" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Memory Access Request</text>
+
+  <!-- Arrow down -->
+  <line x1="450" y1="123" x2="450" y2="148" stroke="#212121" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Decision 1: NX bit -->
+  <polygon points="450,148 600,195 450,242 300,195" fill="#E3F2FD" stroke="#1565C0" stroke-width="2" filter="url(#sh)"/>
+  <text x="450" y="191" text-anchor="middle" font-size="14" fill="#1565C0" font-weight="bold">NX bit set?</text>
+  <text x="450" y="208" text-anchor="middle" font-size="11" fill="#616161">(Execute access to non-exec page?)</text>
+
+  <!-- NX YES -> fault -->
+  <line x1="600" y1="195" x2="730" y2="195" stroke="#D32F2F" stroke-width="2" marker-end="url(#arr-r)"/>
+  <text x="665" y="188" text-anchor="middle" font-size="12" fill="#D32F2F">YES</text>
+  <rect x="730" y="172" width="148" height="46" rx="6" fill="#FFCDD2" stroke="#D32F2F" stroke-width="2"/>
+  <text x="804" y="192" text-anchor="middle" font-size="13" fill="#D32F2F" font-weight="bold">#PF / Inst.Abort</text>
+  <text x="804" y="210" text-anchor="middle" font-size="11" fill="#D32F2F">NX violation</text>
+
+  <!-- NX NO -> next -->
+  <line x1="450" y1="242" x2="450" y2="267" stroke="#2E7D32" stroke-width="2" marker-end="url(#arr-g)"/>
+  <text x="462" y="258" font-size="12" fill="#2E7D32">NO</text>
+
+  <!-- Decision 2: Privilege check (SMEP) -->
+  <polygon points="450,267 620,314 450,361 280,314" fill="#E3F2FD" stroke="#00796B" stroke-width="2" filter="url(#sh)"/>
+  <text x="450" y="308" text-anchor="middle" font-size="14" fill="#00796B" font-weight="bold">Kernel executing</text>
+  <text x="450" y="325" text-anchor="middle" font-size="12" fill="#00796B">user-mode page? (SMEP)</text>
+
+  <!-- SMEP YES -> fault -->
+  <line x1="620" y1="314" x2="730" y2="314" stroke="#D32F2F" stroke-width="2" marker-end="url(#arr-r)"/>
+  <text x="675" y="307" text-anchor="middle" font-size="12" fill="#D32F2F">YES</text>
+  <rect x="730" y="291" width="148" height="46" rx="6" fill="#FFCDD2" stroke="#D32F2F" stroke-width="2"/>
+  <text x="804" y="311" text-anchor="middle" font-size="13" fill="#D32F2F" font-weight="bold">#PF (SMEP)</text>
+  <text x="804" y="329" text-anchor="middle" font-size="11" fill="#D32F2F">CR4.SMEP=1</text>
+
+  <!-- SMEP NO -> next -->
+  <line x1="450" y1="361" x2="450" y2="386" stroke="#2E7D32" stroke-width="2" marker-end="url(#arr-g)"/>
+  <text x="462" y="378" font-size="12" fill="#2E7D32">NO</text>
+
+  <!-- Decision 3: SMAP/PAN -->
+  <polygon points="450,386 620,433 450,480 280,433" fill="#E3F2FD" stroke="#E65100" stroke-width="2" filter="url(#sh)"/>
+  <text x="450" y="427" text-anchor="middle" font-size="14" fill="#E65100" font-weight="bold">Kernel read/write to</text>
+  <text x="450" y="444" text-anchor="middle" font-size="12" fill="#E65100">user page? (SMAP/PAN)</text>
+
+  <!-- SMAP YES -> fault -->
+  <line x1="620" y1="433" x2="730" y2="433" stroke="#D32F2F" stroke-width="2" marker-end="url(#arr-r)"/>
+  <text x="675" y="426" text-anchor="middle" font-size="12" fill="#D32F2F">YES</text>
+  <rect x="730" y="410" width="148" height="46" rx="6" fill="#FFCDD2" stroke="#D32F2F" stroke-width="2"/>
+  <text x="804" y="430" text-anchor="middle" font-size="13" fill="#D32F2F" font-weight="bold">#PF (SMAP)</text>
+  <text x="804" y="448" text-anchor="middle" font-size="11" fill="#D32F2F">unless EFLAGS.AC=1</text>
+
+  <!-- SMAP NO -> access allowed -->
+  <line x1="450" y1="480" x2="450" y2="510" stroke="#2E7D32" stroke-width="2" marker-end="url(#arr-g)"/>
+  <text x="462" y="499" font-size="12" fill="#2E7D32">NO</text>
+
+  <!-- SUCCESS -->
+  <rect x="330" y="510" width="240" height="46" rx="24" fill="#C8E6C9" stroke="#2E7D32" stroke-width="2" filter="url(#sh)"/>
+  <text x="450" y="530" text-anchor="middle" font-size="15" fill="#2E7D32" font-weight="bold">✓ Access Permitted</text>
+  <text x="450" y="548" text-anchor="middle" font-size="11" fill="#2E7D32">TLB lookup proceeds</text>
+
+  <!-- Legend bottom-left -->
+  <rect x="30" y="390" width="220" height="170" rx="6" fill="white" stroke="#9E9E9E" stroke-width="1"/>
+  <text x="140" y="412" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">ISA Coverage</text>
+  <text x="48" y="433" font-size="12" fill="#1565C0" font-weight="bold">NX bit</text>
+  <text x="48" y="450" font-size="11" fill="#616161">x86-64 (XD), ARM64 (UXN/PXN),</text>
+  <text x="48" y="464" font-size="11" fill="#616161">RISC-V (X bit)</text>
+  <text x="48" y="482" font-size="12" fill="#00796B" font-weight="bold">SMEP</text>
+  <text x="48" y="499" font-size="11" fill="#616161">x86-64 CR4.SMEP, ARM64 PAN</text>
+  <text x="48" y="517" font-size="12" fill="#E65100" font-weight="bold">SMAP / PAN</text>
+  <text x="48" y="534" font-size="11" fill="#616161">x86-64 CR4.SMAP, ARM64 PAN</text>
+  <text x="48" y="552" font-size="11" fill="#616161">RISC-V: SUM bit (sstatus)</text>
+
+  <!-- Note -->
+  <text x="450" y="590" text-anchor="middle" font-size="12" fill="#616161">All checks occur before TLB lookup. Hardware enforces in parallel with PTE permission bits.</text>
+  <text x="450" y="610" text-anchor="middle" font-size="12" fill="#616161">SMEP/SMAP introduced: Intel Ivy Bridge (2012) / Haswell (2013). ARM PAN: ARMv8.1-A.</text>
+</svg>
+<figcaption><strong>Figure 6.1:</strong> NX/SMEP/SMAP/PAN enforcement decision flow. The CPU checks these three protection mechanisms on every memory access before consulting the TLB. Failure at any stage raises a hardware fault. All checks are per-access and run in parallel with PTE permission bit evaluation.</figcaption>
+</figure>
+
 <p><strong>Classic Buffer Overflow Exploit:</strong></p>
 <pre><code>// Vulnerable function (pre-NX era)
 void process_request(char *user_input) {
@@ -2223,7 +2315,7 @@ void benchmark_nx_overhead(void) {
 <p><strong>Bottom Line:</strong> NX/XD/XN is the <strong>single most effective hardware security feature</strong> ever added to processors. Every modern system should have it enabled—and nearly all do by default.</p>
 <hr>
 <h2 id="6.4-privilege-levels-and-protection-rings">6.4 Privilege Levels and Protection Rings</h2>
-<figure id="fig-6-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
@@ -2332,7 +2424,7 @@ void benchmark_nx_overhead(void) {
 </svg>
   </div>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
-    <strong>Figure 6.1:</strong> Privilege Level Architecture across x86-64, ARM64, and RISC-V. x86-64 uses protection rings (CPL in CS); ARM64 uses numbered Exception Levels with dedicated system registers per level; RISC-V uses privilege modes enforced by the PMP and satp register.
+    <strong>Figure 6.2:</strong> Privilege Level Architecture across x86-64, ARM64, and RISC-V. x86-64 uses protection rings (CPL in CS); ARM64 uses numbered Exception Levels with dedicated system registers per level; RISC-V uses privilege modes enforced by the PMP and satp register.
   </figcaption>
 </figure>
 <p>Modern processors provide multiple privilege levels to separate trusted code (kernel) from untrusted code (applications). Each architecture implements this differently, but the goal is the same: prevent user code from directly accessing privileged resources.</p>
@@ -2944,7 +3036,7 @@ Kernel Space (Upper Half):
 <p><strong>Why Split Address Space?</strong></p>
 
 <h3 id="kernel-page-table-isolation-kpti">Kernel Page-Table Isolation (KPTI)</h3>
-<figure id="fig-6-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
@@ -3044,7 +3136,7 @@ Kernel Space (Upper Half):
 </svg>
   </div>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
-    <strong>Figure 6.2:</strong> x86-64 Virtual Address Space Layout and KPTI. Pre-KPTI, kernel pages were mapped in every process (U/S=0) enabling the Meltdown transient-execution attack. KPTI splits page tables so user-mode CR3 contains no kernel mappings; PCID (Process-Context ID) eliminates the TLB flush overhead on CR3 switch.
+    <strong>Figure 6.3:</strong> x86-64 Virtual Address Space Layout and KPTI. Pre-KPTI, kernel pages were mapped in every process (U/S=0) enabling the Meltdown transient-execution attack. KPTI splits page tables so user-mode CR3 contains no kernel mappings; PCID (Process-Context ID) eliminates the TLB flush overhead on CR3 switch.
   </figcaption>
 </figure>
 <p>The <strong>Meltdown</strong> vulnerability (2018) allowed user code to speculatively read kernel memory. The mitigation: <strong>KPTI (Kernel Page-Table Isolation)</strong>.</p>
@@ -3314,6 +3406,128 @@ END IF
 <h2 id="6.7-protection-keys-and-domains">6.7 Protection Keys and Domains</h2>
 <p>Protection keys enable <strong>fast, fine-grained memory isolation</strong> within a single address space. Unlike page table permissions (which require expensive TLB flushes to change), protection keys can be modified in just a few cycles.</p>
 <p>[This section covers Intel MPK in detail, including domain-based isolation, cross-domain communication, and performance comparisons showing 50-100× speedup over traditional mprotect.]</p>
+
+<figure id="fig-6-4">
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#212121"/></marker>
+    <marker id="arr-b" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
+    <marker id="arr-r" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#D32F2F"/></marker>
+    <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/></filter>
+  </defs>
+
+  <text x="30" y="36" font-size="20" font-weight="bold" fill="#212121">Memory Protection Keys (x86-64 PKU / ARM64 GCS)</text>
+  <text x="30" y="57" font-size="13" fill="#616161">PKU allows user-space to change access rights on 16 key domains without kernel syscalls — sub-microsecond domain switching.</text>
+
+  <!-- Left: Virtual Address Space -->
+  <rect x="20" y="75" width="250" height="380" rx="8" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="145" y="100" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Virtual Address Space</text>
+  <text x="145" y="118" text-anchor="middle" font-size="12" fill="#616161">(PTE bits 62:59 = key)</text>
+
+  <!-- Memory regions with different keys -->
+  <rect x="40" y="128" width="210" height="40" rx="4" fill="#1565C0"/>
+  <text x="145" y="145" text-anchor="middle" font-size="13" fill="white" font-weight="bold">JIT Code Region</text>
+  <text x="145" y="162" text-anchor="middle" font-size="11" fill="#B3D1F0">key=1  (R-X)</text>
+
+  <rect x="40" y="178" width="210" height="40" rx="4" fill="#00796B"/>
+  <text x="145" y="195" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Trusted Data</text>
+  <text x="145" y="212" text-anchor="middle" font-size="11" fill="#B2DFDB">key=2  (RW-)</text>
+
+  <rect x="40" y="228" width="210" height="40" rx="4" fill="#E65100"/>
+  <text x="145" y="245" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Sandbox Region</text>
+  <text x="145" y="262" text-anchor="middle" font-size="11" fill="#FFCCBC">key=3  (R--) locked</text>
+
+  <rect x="40" y="278" width="210" height="40" rx="4" fill="#9E9E9E"/>
+  <text x="145" y="295" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Heap / Stack</text>
+  <text x="145" y="312" text-anchor="middle" font-size="11" fill="#F5F5F5">key=0  (RW-)  default</text>
+
+  <rect x="40" y="328" width="210" height="40" rx="4" fill="#37474F"/>
+  <text x="145" y="345" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Sensitive Crypto</text>
+  <text x="145" y="362" text-anchor="middle" font-size="11" fill="#B0BEC5">key=4  (RW-) isolated</text>
+
+  <text x="145" y="400" text-anchor="middle" font-size="12" fill="#616161">Up to 16 keys (0–15)</text>
+  <text x="145" y="418" text-anchor="middle" font-size="12" fill="#616161">per process</text>
+  <text x="145" y="440" text-anchor="middle" font-size="12" fill="#1565C0">PKRU register holds</text>
+  <text x="145" y="458" text-anchor="middle" font-size="12" fill="#1565C0">per-key AD+WD bits</text>
+
+  <!-- Center: PKRU register -->
+  <rect x="310" y="75" width="280" height="380" rx="8" fill="#E3F2FD" stroke="#1565C0" stroke-width="2" filter="url(#sh)"/>
+  <text x="450" y="100" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">PKRU Register (32-bit)</text>
+  <text x="450" y="118" text-anchor="middle" font-size="12" fill="#616161">Userspace read/write via RDPKRU / WRPKRU</text>
+
+  <!-- PKRU bit layout -->
+  <rect x="325" y="128" width="250" height="30" rx="4" fill="#1565C0"/>
+  <text x="450" y="149" text-anchor="middle" font-size="12" fill="white">Bits 31:0  — 16 keys × 2 bits each</text>
+
+  <!-- Key entries -->
+  <rect x="325" y="168" width="250" height="24" rx="3" fill="white" stroke="#9E9E9E"/>
+  <text x="340" y="184" font-size="12" fill="#212121">key 0:</text><text x="420" y="184" font-size="12" fill="#2E7D32">AD=0 WD=0 (RW- allowed)</text>
+  <rect x="325" y="196" width="250" height="24" rx="3" fill="white" stroke="#9E9E9E"/>
+  <text x="340" y="212" font-size="12" fill="#212121">key 1:</text><text x="420" y="212" font-size="12" fill="#2E7D32">AD=0 WD=1 (R-X only)</text>
+  <rect x="325" y="224" width="250" height="24" rx="3" fill="white" stroke="#9E9E9E"/>
+  <text x="340" y="240" font-size="12" fill="#212121">key 2:</text><text x="420" y="240" font-size="12" fill="#2E7D32">AD=0 WD=0 (RW-)</text>
+  <rect x="325" y="252" width="250" height="24" rx="3" fill="#FFCDD2" stroke="#D32F2F"/>
+  <text x="340" y="268" font-size="12" fill="#212121">key 3:</text><text x="420" y="268" font-size="12" fill="#D32F2F">AD=1 WD=1 (DENIED)</text>
+  <rect x="325" y="280" width="250" height="24" rx="3" fill="white" stroke="#9E9E9E"/>
+  <text x="340" y="296" font-size="12" fill="#212121">key 4:</text><text x="420" y="296" font-size="12" fill="#2E7D32">AD=0 WD=0 (RW-)</text>
+  <text x="450" y="320" text-anchor="middle" font-size="11" fill="#616161">... keys 5–15 ...</text>
+
+  <!-- WRPKRU instruction -->
+  <rect x="325" y="340" width="250" height="50" rx="6" fill="#1565C0"/>
+  <text x="450" y="361" text-anchor="middle" font-size="13" fill="white" font-weight="bold">WRPKRU instruction</text>
+  <text x="450" y="379" text-anchor="middle" font-size="11" fill="#B3D1F0">~3 cycles — no syscall needed!</text>
+
+  <text x="450" y="415" text-anchor="middle" font-size="12" fill="#212121">AD = Access Disable</text>
+  <text x="450" y="433" text-anchor="middle" font-size="12" fill="#212121">WD = Write Disable</text>
+  <text x="450" y="453" text-anchor="middle" font-size="11" fill="#616161">Intel Skylake+, Linux 4.6+</text>
+
+  <!-- Right: Use case diagram -->
+  <rect x="630" y="75" width="248" height="380" rx="8" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="754" y="100" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">JIT Compiler Use Case</text>
+  <text x="754" y="118" text-anchor="middle" font-size="12" fill="#616161">(V8 / LuaJIT pattern)</text>
+
+  <!-- Flow -->
+  <rect x="650" y="128" width="210" height="40" rx="4" fill="#37474F"/>
+  <text x="755" y="145" text-anchor="middle" font-size="12" fill="white" font-weight="bold">1. Compile bytecode</text>
+  <text x="755" y="161" text-anchor="middle" font-size="11" fill="#B0BEC5">key=1: WD=0, write code</text>
+  <line x1="755" y1="168" x2="755" y2="183" stroke="#212121" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="650" y="183" width="210" height="40" rx="4" fill="#1565C0"/>
+  <text x="755" y="200" text-anchor="middle" font-size="12" fill="white" font-weight="bold">2. WRPKRU: lock code</text>
+  <text x="755" y="216" text-anchor="middle" font-size="11" fill="#B3D1F0">key=1: WD=1 (exec only)</text>
+  <line x1="755" y1="223" x2="755" y2="238" stroke="#212121" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="650" y="238" width="210" height="40" rx="4" fill="#2E7D32"/>
+  <text x="755" y="255" text-anchor="middle" font-size="12" fill="white" font-weight="bold">3. Execute JIT code</text>
+  <text x="755" y="271" text-anchor="middle" font-size="11" fill="#B9F6CA">JIT region now X-only</text>
+  <line x1="755" y1="278" x2="755" y2="293" stroke="#212121" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="650" y="293" width="210" height="40" rx="4" fill="#E65100"/>
+  <text x="755" y="310" text-anchor="middle" font-size="12" fill="white" font-weight="bold">4. Exploit attempts write</text>
+  <text x="755" y="326" text-anchor="middle" font-size="11" fill="#FFCCBC">key=1 WD=1 → SEGFAULT</text>
+
+  <rect x="650" y="353" width="210" height="40" rx="4" fill="#FFCDD2" stroke="#D32F2F" stroke-width="1.5"/>
+  <text x="755" y="370" text-anchor="middle" font-size="13" fill="#D32F2F" font-weight="bold">✗ Write blocked</text>
+  <text x="755" y="388" text-anchor="middle" font-size="11" fill="#D32F2F">no kernel, ~3 cycles overhead</text>
+
+  <text x="754" y="420" text-anchor="middle" font-size="12" fill="#1565C0">Traditional approach: mprotect()</text>
+  <text x="754" y="438" text-anchor="middle" font-size="12" fill="#616161">syscall = ~1,000 cycles</text>
+  <text x="754" y="458" text-anchor="middle" font-size="12" fill="#1565C0">PKU approach: WRPKRU</text>
+  <text x="754" y="474" text-anchor="middle" font-size="12" fill="#1B5E20">= ~3 cycles (333× faster)</text>
+
+  <!-- Arrows connecting left to center -->
+  <line x1="250" y1="148" x2="310" y2="180" stroke="#1565C0" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-b)"/>
+  <line x1="250" y1="228" x2="310" y2="256" stroke="#D32F2F" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-r)"/>
+
+  <!-- Bottom -->
+  <rect x="20" y="462" width="860" height="2" fill="#9E9E9E"/>
+  <text x="450" y="486" text-anchor="middle" font-size="13" fill="#212121" font-weight="bold">PKU is the only hardware mechanism allowing sub-microsecond permission changes entirely in user space.</text>
+  <text x="450" y="506" text-anchor="middle" font-size="12" fill="#616161">Supported: x86-64 (Skylake+, Linux 4.6+). ARM64 equivalent: GCS (Guarded Control Stack, ARMv9.0).</text>
+  <text x="450" y="526" text-anchor="middle" font-size="12" fill="#616161">Use case: JIT compilers (V8, LuaJIT), sandboxing (WebAssembly), memory-safe language runtimes.</text>
+</svg>
+<figcaption><strong>Figure 6.4:</strong> Memory Protection Keys (PKU) mechanism. Each PTE encodes a 4-bit key (0–15) in bits 62:59. The 32-bit PKRU register holds per-key Access Disable (AD) and Write Disable (WD) bits. User-space can switch domain permissions with a single WRPKRU instruction (~3 cycles) without a syscall — 333× faster than mprotect().</figcaption>
+</figure>
+
 <hr>
 <h2 id="6.8-trusted-execution-environments-tee-deep-dive">6.8 Trusted Execution Environments (TEE) - Deep Dive</h2>
 <p>Trusted Execution Environments represent a fundamental shift in how we approach system security: rather than trying to secure an entire operating system (which may contain millions of lines of code), we create small, hardware-isolated compartments for executing security-critical code. This section explores the major TEE implementations and their role in modern memory protection.</p>
@@ -3334,7 +3548,7 @@ END IF
 <li><strong>Cloud confidential computing:</strong> Process sensitive data in untrusted cloud</li>
 </ul>
 <h3 id="arm-trustzone-the-dominant-mobile-tee">ARM TrustZone: The Dominant Mobile TEE</h3>
-<figure id="fig-6-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
@@ -3456,7 +3670,7 @@ END IF
 </svg>
   </div>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
-    <strong>Figure 6.3:</strong> Trusted Execution Environment Architectures. ARM TrustZone enforces world isolation via the NS bit; Intel SGX protects per-application enclaves even from the OS; AMD SEV-SNP encrypts entire VM memory using per-ASID keys with an RMP (Reverse Map Table) for integrity.
+    <strong>Figure 6.5:</strong> Trusted Execution Environment Architectures. ARM TrustZone enforces world isolation via the NS bit; Intel SGX protects per-application enclaves even from the OS; AMD SEV-SNP encrypts entire VM memory using per-ASID keys with an RMP (Reverse Map Table) for integrity.
   </figcaption>
 </figure>
 <p>ARM TrustZone is the most widely deployed TEE technology, present in billions of mobile devices. It creates two parallel worlds within every ARM processor core.</p>
@@ -4476,7 +4690,7 @@ void clear_secret_barrier(char *secret, size_t len) {
 <h2 id="6.11-confidential-computing-hardware-based-vm-isolation">6.11 Confidential Computing: Hardware-Based VM Isolation</h2>
 <p>Confidential computing extends TEE concepts to entire virtual machines, providing strong isolation even in untrusted cloud environments.</p>
 <h3 id="amd-sev-snp-secure-encrypted-virtualization-secure-nested-paging">AMD SEV-SNP (Secure Encrypted Virtualization - Secure Nested Paging)</h3>
-<figure id="fig-6-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
@@ -4570,7 +4784,7 @@ void clear_secret_barrier(char *secret, size_t len) {
 </svg>
   </div>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
-    <strong>Figure 6.4:</strong> Confidential Computing Architectures. AMD SEV-SNP encrypts VM memory at DRAM and uses a Reverse Map Table (RMP) for integrity. Intel TDX isolates Trust Domains via the SEAM module and per-KeyID EPT. ARM CCA introduces a Realm World protected by the Granule Protection Table (GPT).
+    <strong>Figure 6.6:</strong> Confidential Computing Architectures. AMD SEV-SNP encrypts VM memory at DRAM and uses a Reverse Map Table (RMP) for integrity. Intel TDX isolates Trust Domains via the SEAM module and per-KeyID EPT. ARM CCA introduces a Realm World protected by the Granule Protection Table (GPT).
   </figcaption>
 </figure>
 <p><strong>Architecture:</strong></p>
@@ -5472,7 +5686,7 @@ void process_data_gpu(void *sensitive_data) {
 <li><strong>Multi-Tenancy:</strong> Cloud GPUs shared between VMs</li>
 </ol>
 <h3 id="gpu-memory-architecture">GPU Memory Architecture</h3>
-<figure id="fig-6-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-7" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="480" viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
@@ -5571,7 +5785,7 @@ void process_data_gpu(void *sensitive_data) {
 </svg>
   </div>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
-    <strong>Figure 6.5:</strong> Heterogeneous Memory Security: Discrete GPU vs Unified Memory. Discrete GPUs require IOMMU protection and explicit data transfer; NVIDIA H100 Confidential Computing mode adds AES-GCM encryption across PCIe and VRAM. Unified memory architectures (Apple M-series, AMD MI300A) share physical pages between CPU and GPU, with IOMMUs providing the isolation boundary.
+    <strong>Figure 6.7:</strong> Heterogeneous Memory Security: Discrete GPU vs Unified Memory. Discrete GPUs require IOMMU protection and explicit data transfer; NVIDIA H100 Confidential Computing mode adds AES-GCM encryption across PCIe and VRAM. Unified memory architectures (Apple M-series, AMD MI300A) share physical pages between CPU and GPU, with IOMMUs providing the isolation boundary.
   </figcaption>
 </figure>
 <p><strong>NVIDIA GPU Memory Hierarchy:</strong></p>
