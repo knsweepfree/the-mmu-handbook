@@ -1,0 +1,45 @@
+#!/bin/sh
+# MMU Handbook — pre-commit gate
+# Runs the full 5-group audit before every commit.
+# Blocks the commit if any chapter has issues.
+#
+# To bypass in emergencies only: git commit --no-verify
+# (This should never be used for chapter file changes.)
+
+AUDIT_SCRIPT="/mnt/skills/user/chapter-structure/scripts/audit.py"
+CHAPTERS_DIR="$(git rev-parse --show-toplevel)/chapters"
+
+# Only run if chapter files are being committed
+CHAPTER_CHANGES=$(git diff --cached --name-only | grep -c 'chapters/chapter-.*\.html' || true)
+if [ "$CHAPTER_CHANGES" -eq "0" ]; then
+  exit 0  # no chapter files staged, skip audit
+fi
+
+# Check audit script exists
+if [ ! -f "$AUDIT_SCRIPT" ]; then
+  echo "ERROR: Audit script not found at $AUDIT_SCRIPT"
+  echo "       Cannot verify chapter quality. Commit blocked."
+  exit 1
+fi
+
+echo ""
+echo "=========================================="
+echo " MMU Handbook pre-commit quality gate"
+echo " Checking $CHAPTER_CHANGES changed chapter file(s)..."
+echo "=========================================="
+
+python3 "$AUDIT_SCRIPT" "$CHAPTERS_DIR"
+AUDIT_EXIT=$?
+
+if [ $AUDIT_EXIT -ne 0 ]; then
+  echo ""
+  echo "COMMIT BLOCKED — audit found issues in one or more chapters."
+  echo "Fix all issues above, then re-run: git add ... && git commit"
+  echo ""
+  echo "To see only issues: python3 $AUDIT_SCRIPT $CHAPTERS_DIR"
+  echo "(Use git commit --no-verify ONLY for non-chapter commits.)"
+  exit 1
+fi
+
+echo "Pre-commit gate passed — proceeding with commit."
+exit 0
