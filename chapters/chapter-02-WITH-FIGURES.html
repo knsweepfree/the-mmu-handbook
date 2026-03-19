@@ -959,9 +959,9 @@ hardware with limited physical RAM.</p>
   <text x="120" y="163" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Stack</text>
   <rect x="62" y="175" width="116" height="22" rx="3" fill="#5E81AC"/>
   <text x="120" y="190" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Heap</text>
-  <rect x="62" y="202" width="116" height="22" rx="3" fill="#42A5F5"/>
+  <rect x="62" y="202" width="116" height="22" rx="3" fill="#5E81AC"/>
   <text x="120" y="217" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Mapped Files</text>
-  <rect x="62" y="229" width="116" height="22" rx="3" fill="#90CAF9"/>
+  <rect x="62" y="229" width="116" height="22" rx="3" fill="#DDEAF5"/>
   <text x="120" y="244" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#212121" text-anchor="middle">Code + Libs</text>
   <text x="120" y="272" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#DDEAF5" text-anchor="middle">8 GB virtual</text>
   <text x="120" y="290" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BDBDBD" text-anchor="middle">needed</text>
@@ -975,7 +975,7 @@ hardware with limited physical RAM.</p>
   <text x="275" y="147" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Stack</text>
   <rect x="217" y="159" width="116" height="22" rx="3" fill="#5E81AC"/>
   <text x="275" y="174" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Heap</text>
-  <rect x="217" y="186" width="116" height="22" rx="3" fill="#42A5F5"/>
+  <rect x="217" y="186" width="116" height="22" rx="3" fill="#5E81AC"/>
   <text x="275" y="201" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Code + Libs</text>
   <text x="275" y="222" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#DDEAF5" text-anchor="middle">3 GB virtual</text>
 
@@ -988,9 +988,9 @@ hardware with limited physical RAM.</p>
   <text x="430" y="147" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Stack</text>
   <rect x="372" y="159" width="116" height="22" rx="3" fill="#5E81AC"/>
   <text x="430" y="174" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Heap (Buffer Pool)</text>
-  <rect x="372" y="186" width="116" height="22" rx="3" fill="#42A5F5"/>
+  <rect x="372" y="186" width="116" height="22" rx="3" fill="#5E81AC"/>
   <text x="430" y="201" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Shared Mem</text>
-  <rect x="372" y="213" width="116" height="22" rx="3" fill="#90CAF9"/>
+  <rect x="372" y="213" width="116" height="22" rx="3" fill="#DDEAF5"/>
   <text x="430" y="228" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#212121" text-anchor="middle">Code</text>
   <text x="430" y="250" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#DDEAF5" text-anchor="middle">4 GB virtual</text>
 
@@ -1008,7 +1008,7 @@ hardware with limited physical RAM.</p>
   <text x="150" y="452" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BDBDBD" text-anchor="middle">~10–20% of pages</text>
   <text x="150" y="472" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BDBDBD" text-anchor="middle">→ stays in RAM</text>
   <text x="150" y="492" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#DDEAF5" text-anchor="middle">accesses: 99%+ of time</text>
-  <rect x="260" y="410" width="230" height="96" rx="5" fill="#EEEEEE" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="260" y="410" width="230" height="96" rx="5" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
   <text x="375" y="432" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#616161" text-anchor="middle">Inactive / Cold Pages</text>
   <text x="375" y="452" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#9E9E9E" text-anchor="middle">~80–90% of virtual space</text>
   <text x="375" y="472" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#9E9E9E" text-anchor="middle">→ can reside on disk</text>
@@ -1052,7 +1052,7 @@ hardware with limited physical RAM.</p>
   <text x="707" y="326" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">OS Kernel + Page Cache (~2 GB)</text>
 
   <!-- Swap / disk region -->
-  <rect x="565" y="346" width="285" height="180" rx="4" fill="#EEEEEE" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <rect x="565" y="346" width="285" height="180" rx="4" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="6,3"/>
   <text x="707" y="368" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#9E9E9E" text-anchor="middle">Swap / Disk</text>
   <text x="707" y="390" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#9E9E9E" text-anchor="middle">(Cold / inactive pages evicted here)</text>
   <rect x="580" y="400" width="255" height="22" rx="3" fill="#F5F5F5" stroke="#BDBDBD" stroke-width="1"/>
@@ -1177,7 +1177,7 @@ physical memory only when they’re accessed, not when the program starts
 
   <!-- Step 5: Save context -->
   <g filter="url(#shadow)">
-    <rect x="70" y="482" width="160" height="52" rx="6" fill="#BF616A" stroke="#BF360C" stroke-width="2"/>
+    <rect x="70" y="482" width="160" height="52" rx="6" fill="#BF616A" stroke="#BF616A" stroke-width="2"/>
     <text x="150" y="504" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle" font-weight="bold">① Save CPU</text>
     <text x="150" y="522" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">Context / Registers</text>
   </g>
@@ -1186,7 +1186,7 @@ physical memory only when they’re accessed, not when the program starts
 
   <!-- Step 6: Select victim page -->
   <g filter="url(#shadow)">
-    <rect x="260" y="482" width="160" height="52" rx="6" fill="#BF616A" stroke="#BF360C" stroke-width="2"/>
+    <rect x="260" y="482" width="160" height="52" rx="6" fill="#BF616A" stroke="#BF616A" stroke-width="2"/>
     <text x="340" y="504" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle" font-weight="bold">② Select Victim</text>
     <text x="340" y="522" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">Page (if mem full)</text>
   </g>
@@ -1195,7 +1195,7 @@ physical memory only when they’re accessed, not when the program starts
 
   <!-- Step 7: Load page from disk -->
   <g filter="url(#shadow)">
-    <rect x="450" y="482" width="160" height="52" rx="6" fill="#BF616A" stroke="#BF360C" stroke-width="2"/>
+    <rect x="450" y="482" width="160" height="52" rx="6" fill="#BF616A" stroke="#BF616A" stroke-width="2"/>
     <text x="530" y="504" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle" font-weight="bold">③ Load Page</text>
     <text x="530" y="522" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">from Disk/Swap</text>
   </g>
@@ -1204,13 +1204,13 @@ physical memory only when they’re accessed, not when the program starts
 
   <!-- Step 8: Update PT and resume -->
   <g filter="url(#shadow)">
-    <rect x="640" y="482" width="175" height="52" rx="6" fill="#BF616A" stroke="#BF360C" stroke-width="2"/>
+    <rect x="640" y="482" width="175" height="52" rx="6" fill="#BF616A" stroke="#BF616A" stroke-width="2"/>
     <text x="727" y="504" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#FFFFFF" text-anchor="middle" font-weight="bold">④ Update PT &amp; TLB</text>
     <text x="727" y="522" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">→ Resume Process</text>
   </g>
 
   <!-- Disk I/O cost callout -->
-  <text x="450" y="565" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#BF360C" text-anchor="middle" font-weight="bold">Disk I/O: ~5–10 million cycles  |  SSD: ~100K–1M cycles</text>
+  <text x="450" y="565" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#BF616A" text-anchor="middle" font-weight="bold">Disk I/O: ~5–10 million cycles  |  SSD: ~100K–1M cycles</text>
 
   <!-- Legend -->
   <rect x="50" y="610" width="14" height="14" fill="#5E81AC" rx="2"/>
@@ -1442,9 +1442,9 @@ problem</strong> [Belady, 1966].</p>
     <!-- Access 1: fault, 1 loaded into frame0 -->
     <rect x="107" y="170" width="50" height="22" rx="3" fill="#FFCCBC" stroke="#BF616A" stroke-width="1"/>
     <text x="132" y="186" fill="#212121">1</text>
-    <rect x="107" y="196" width="50" height="22" rx="3" fill="#EEEEEE" stroke="#9E9E9E" stroke-width="1"/>
+    <rect x="107" y="196" width="50" height="22" rx="3" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
     <text x="132" y="212" fill="#9E9E9E">-</text>
-    <rect x="107" y="222" width="50" height="22" rx="3" fill="#EEEEEE" stroke="#9E9E9E" stroke-width="1"/>
+    <rect x="107" y="222" width="50" height="22" rx="3" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
     <text x="132" y="238" fill="#9E9E9E">-</text>
     <text x="132" y="260" fill="#BF616A" font-weight="bold">✕</text>
 
@@ -1453,7 +1453,7 @@ problem</strong> [Belady, 1966].</p>
     <text x="197" y="186" fill="#212121">1</text>
     <rect x="172" y="196" width="50" height="22" rx="3" fill="#FFCCBC" stroke="#BF616A" stroke-width="1"/>
     <text x="197" y="212" fill="#212121">2</text>
-    <rect x="172" y="222" width="50" height="22" rx="3" fill="#EEEEEE" stroke="#9E9E9E" stroke-width="1"/>
+    <rect x="172" y="222" width="50" height="22" rx="3" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
     <text x="197" y="238" fill="#9E9E9E">-</text>
     <text x="197" y="260" fill="#BF616A" font-weight="bold">✕</text>
 
@@ -1563,9 +1563,9 @@ problem</strong> [Belady, 1966].</p>
     <!-- 1: fault [1,-,-] -->
     <rect x="107" y="334" width="50" height="22" rx="3" fill="#FFCCBC" stroke="#BF616A" stroke-width="1"/>
     <text x="132" y="350" fill="#212121">1</text>
-    <rect x="107" y="358" width="50" height="22" rx="3" fill="#EEEEEE" stroke="#9E9E9E" stroke-width="1"/>
+    <rect x="107" y="358" width="50" height="22" rx="3" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
     <text x="132" y="374" fill="#9E9E9E">-</text>
-    <rect x="107" y="382" width="50" height="22" rx="3" fill="#EEEEEE" stroke="#9E9E9E" stroke-width="1"/>
+    <rect x="107" y="382" width="50" height="22" rx="3" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
     <text x="132" y="398" fill="#9E9E9E">-</text>
     <text x="132" y="424" fill="#BF616A" font-weight="bold">✕</text>
 
@@ -1574,7 +1574,7 @@ problem</strong> [Belady, 1966].</p>
     <text x="197" y="350" fill="#212121">1</text>
     <rect x="172" y="358" width="50" height="22" rx="3" fill="#FFCCBC" stroke="#BF616A" stroke-width="1"/>
     <text x="197" y="374" fill="#212121">2</text>
-    <rect x="172" y="382" width="50" height="22" rx="3" fill="#EEEEEE" stroke="#9E9E9E" stroke-width="1"/>
+    <rect x="172" y="382" width="50" height="22" rx="3" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
     <text x="197" y="398" fill="#9E9E9E">-</text>
     <text x="197" y="424" fill="#BF616A" font-weight="bold">✕</text>
 
@@ -1690,7 +1690,7 @@ problem</strong> [Belady, 1966].</p>
     <text x="-48" y="34" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="white" text-anchor="middle" font-weight="bold">P:2 R=0</text>
 
     <!-- Frame 2 bottom-right -->
-    <rect x="20" y="16" width="56" height="26" rx="5" fill="#BF616A" stroke="#BF360C" stroke-width="2"/>
+    <rect x="20" y="16" width="56" height="26" rx="5" fill="#BF616A" stroke="#BF616A" stroke-width="2"/>
     <text x="48" y="34" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="white" text-anchor="middle" font-weight="bold">P:3 R=0</text>
 
     <!-- Clock hand arrow pointing to frame2 (evict candidate) -->
@@ -1983,7 +1983,7 @@ Working Set Model</h2>
   <text x="262" y="106" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BF616A" text-anchor="middle">Peak</text>
 
   <!-- Thrashing zone shading -->
-  <polygon points="285,280 285,130 410,268 410,280" fill="#FFECB3" opacity="0.7"/>
+  <polygon points="285,280 285,130 410,268 410,280" fill="#F5F5F5" opacity="0.7"/>
   <text x="355" y="235" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BF616A" font-weight="bold" text-anchor="middle">THRASHING</text>
   <text x="355" y="253" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BF616A" text-anchor="middle">zone</text>
 
@@ -2000,35 +2000,35 @@ Working Set Model</h2>
   <!-- Node positions: top=670,100 | top-right=755,130 | right=775,185 | bottom-right=730,250 | bottom=640,265 | left=560,185 | top-left=575,125 -->
 
   <!-- Node 1: Too many processes -->
-  <rect x="595" y="90" width="150" height="32" rx="16" fill="#BF616A" stroke="#BF360C" stroke-width="2" filter="url(#sh)"/>
+  <rect x="595" y="90" width="150" height="32" rx="16" fill="#BF616A" stroke="#BF616A" stroke-width="2" filter="url(#sh)"/>
   <text x="670" y="111" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">Too many processes</text>
 
   <!-- Arrow 1→2 -->
   <path d="M 720 116 Q 790 130 780 155" fill="none" stroke="#212121" stroke-width="2" marker-end="url(#arr)"/>
 
   <!-- Node 2: Too few frames each -->
-  <rect x="738" y="155" width="140" height="32" rx="16" fill="#BF616A" stroke="#BF360C" stroke-width="2" filter="url(#sh)"/>
+  <rect x="738" y="155" width="140" height="32" rx="16" fill="#BF616A" stroke="#BF616A" stroke-width="2" filter="url(#sh)"/>
   <text x="808" y="176" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">Too few frames each</text>
 
   <!-- Arrow 2→3 -->
   <path d="M 775 190 Q 790 220 755 235" fill="none" stroke="#212121" stroke-width="2" marker-end="url(#arr)"/>
 
   <!-- Node 3: Frequent page faults -->
-  <rect x="660" y="233" width="150" height="32" rx="16" fill="#BF616A" stroke="#BF360C" stroke-width="2" filter="url(#sh)"/>
+  <rect x="660" y="233" width="150" height="32" rx="16" fill="#BF616A" stroke="#BF616A" stroke-width="2" filter="url(#sh)"/>
   <text x="735" y="254" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">Frequent page faults</text>
 
   <!-- Arrow 3→4 -->
   <path d="M 660 258 Q 625 268 605 255" fill="none" stroke="#212121" stroke-width="2" marker-end="url(#arr)"/>
 
   <!-- Node 4: Disk I/O saturated -->
-  <rect x="480" y="233" width="128" height="32" rx="16" fill="#BF616A" stroke="#BF360C" stroke-width="2" filter="url(#sh)"/>
+  <rect x="480" y="233" width="128" height="32" rx="16" fill="#BF616A" stroke="#BF616A" stroke-width="2" filter="url(#sh)"/>
   <text x="544" y="254" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">Disk I/O saturated</text>
 
   <!-- Arrow 4→5 -->
   <path d="M 484 233 Q 468 205 480 185" fill="none" stroke="#212121" stroke-width="2" marker-end="url(#arr)"/>
 
   <!-- Node 5: CPU waits for I/O -->
-  <rect x="476" y="155" width="135" height="32" rx="16" fill="#BF616A" stroke="#BF360C" stroke-width="2" filter="url(#sh)"/>
+  <rect x="476" y="155" width="135" height="32" rx="16" fill="#BF616A" stroke="#BF616A" stroke-width="2" filter="url(#sh)"/>
   <text x="543" y="176" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">CPU idles waiting I/O</text>
 
   <!-- Arrow 5→6 -->
@@ -2036,12 +2036,12 @@ Working Set Model</h2>
 
   <!-- Node 6: OS adds more processes (the bad decision) -->
   <!-- wraps back to node 1 — shown with special label -->
-  <rect x="600" y="155" width="135" height="32" rx="16" fill="#BF360C" stroke="#7f0000" stroke-width="2" filter="url(#sh)"/>
+  <rect x="600" y="155" width="135" height="32" rx="16" fill="#BF616A" stroke="#BF616A" stroke-width="2" filter="url(#sh)"/>
   <text x="667" y="169" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#DDEAF5" text-anchor="middle" font-weight="bold">OS: low CPU util →</text>
   <text x="667" y="183" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#DDEAF5" text-anchor="middle" font-weight="bold">add MORE processes!</text>
 
   <!-- Arrow 6 back to 1 -->
-  <path d="M 670 155 Q 670 130 665 122" fill="none" stroke="#BF360C" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arr-o)"/>
+  <path d="M 670 155 Q 670 130 665 122" fill="none" stroke="#BF616A" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arr-o)"/>
 
   <!-- OOM/solution callout -->
   <rect x="476" y="290" width="395" height="26" rx="5" fill="#F5F5F5" stroke="#BF616A" stroke-width="1"/>
@@ -2120,8 +2120,8 @@ Working Set Model</h2>
   <text x="460" y="508" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#616161" text-anchor="middle">Phase change at t=7: page 5 joins</text>
 
   <!-- Working set size over time mini chart -->
-  <rect x="610" y="435" width="245" height="80" rx="6" fill="#FFF9C4" stroke="#BF616A" stroke-width="1.5"/>
-  <text x="732" y="453" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#F57F17" text-anchor="middle">Working Set Size Over Time</text>
+  <rect x="610" y="435" width="245" height="80" rx="6" fill="#F5F5F5" stroke="#BF616A" stroke-width="1.5"/>
+  <text x="732" y="453" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#BF616A" text-anchor="middle">Working Set Size Over Time</text>
   <!-- Mini axes -->
   <line x1="630" y1="505" x2="843" y2="505" stroke="#9E9E9E" stroke-width="1.5" marker-end="url(#arr)"/>
   <line x1="630" y1="505" x2="630" y2="460" stroke="#9E9E9E" stroke-width="1.5" marker-end="url(#arr)"/>
@@ -2364,7 +2364,7 @@ a new program</p>
 
   <!-- ===== DIVIDER / FORK EVENT ===== -->
   <g id="fork-event" transform="translate(450,285)">
-    <rect x="-30" y="-36" width="60" height="72" rx="30" fill="#BF616A" stroke="#BF360C" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="-30" y="-36" width="60" height="72" rx="30" fill="#BF616A" stroke="#BF616A" stroke-width="2" filter="url(#shadow)"/>
     <text x="0" y="-12" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#FFFFFF" text-anchor="middle" font-weight="bold">fork()</text>
     <text x="0" y="8" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle">shallow</text>
     <text x="0" y="23" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle">copy →</text>
@@ -2373,7 +2373,7 @@ a new program</p>
 
   <!-- ===== AFTER FORK — RIGHT PANEL ===== -->
   <rect x="480" y="55" width="400" height="460" rx="8" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5"/>
-  <rect x="480" y="55" width="400" height="36" rx="8" fill="#BF616A" stroke="#BF360C" stroke-width="1.5"/>
+  <rect x="480" y="55" width="400" height="36" rx="8" fill="#BF616A" stroke="#BF616A" stroke-width="1.5"/>
   <text x="680" y="79" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF" text-anchor="middle">AFTER fork() — Child Writes to Heap</text>
 
   <!-- Parent box -->
@@ -2385,7 +2385,7 @@ a new program</p>
 
   <!-- Child box -->
   <g filter="url(#shadow)">
-    <rect x="755" y="100" width="110" height="50" rx="6" fill="#BF616A" stroke="#BF360C" stroke-width="2"/>
+    <rect x="755" y="100" width="110" height="50" rx="6" fill="#BF616A" stroke="#BF616A" stroke-width="2"/>
     <text x="810" y="122" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle" font-weight="bold">Child</text>
     <text x="810" y="140" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#BDBDBD" text-anchor="middle">write triggers COW</text>
   </g>
@@ -2408,14 +2408,14 @@ a new program</p>
   <!-- Frame 22 — Original Heap: Parent maps here, now read-only -->
   <rect x="610" y="382" width="145" height="30" rx="4" fill="#DDEAF5" stroke="#5E81AC" stroke-width="2" stroke-dasharray="5,3"/>
   <text x="682" y="402" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#212121" text-anchor="middle" font-weight="bold">Frame 22 — Heap</text>
-  <rect x="760" y="386" width="70" height="22" rx="4" fill="#FFF9C4" stroke="#BF616A" stroke-width="1"/>
-  <text x="795" y="402" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#F57F17" text-anchor="middle" font-weight="bold">Parent R/O</text>
+  <rect x="760" y="386" width="70" height="22" rx="4" fill="#F5F5F5" stroke="#BF616A" stroke-width="1"/>
+  <text x="795" y="402" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#BF616A" text-anchor="middle" font-weight="bold">Parent R/O</text>
 
   <!-- New Frame 35 — Child's COW copy of Heap -->
   <rect x="610" y="430" width="145" height="30" rx="4" fill="#FFCCBC" stroke="#BF616A" stroke-width="2"/>
   <text x="682" y="450" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#212121" text-anchor="middle" font-weight="bold">Frame 35 — Heap′ (copy)</text>
   <rect x="760" y="434" width="70" height="22" rx="4" fill="#FFCCBC" stroke="#BF616A" stroke-width="1"/>
-  <text x="795" y="450" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#BF360C" text-anchor="middle" font-weight="bold">Child R/W</text>
+  <text x="795" y="450" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#BF616A" text-anchor="middle" font-weight="bold">Child R/W</text>
 
   <!-- Arrow: Parent → shared frames -->
   <line x1="555" y1="150" x2="610" y2="210" stroke="#5E81AC" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
@@ -2570,7 +2570,7 @@ I/O vs. Memory Mapping</h3>
 
   <!-- ===== LEFT: TRADITIONAL I/O ===== -->
   <rect x="30" y="52" width="400" height="390" rx="8" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5"/>
-  <rect x="30" y="52" width="400" height="34" rx="8" fill="#9E9E9E" stroke="#757575" stroke-width="1.5"/>
+  <rect x="30" y="52" width="400" height="34" rx="8" fill="#9E9E9E" stroke="#9E9E9E" stroke-width="1.5"/>
   <text x="230" y="75" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">Traditional File I/O — Two-Copy Path</text>
 
   <!-- Layers: App Buffer → Kernel Buffer → Disk -->
@@ -2607,12 +2607,12 @@ I/O vs. Memory Mapping</h3>
 
   <!-- CPU processes data -->
   <g filter="url(#sh)">
-    <rect x="135" y="348" width="190" height="40" rx="6" fill="#BF616A" stroke="#BF360C" stroke-width="2"/>
+    <rect x="135" y="348" width="190" height="40" rx="6" fill="#BF616A" stroke="#BF616A" stroke-width="2"/>
   </g>
   <text x="230" y="369" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">③ CPU processes buffer</text>
 
   <!-- Cost annotation -->
-  <rect x="45" y="400" width="372" height="32" rx="5" fill="#FFECB3" stroke="#BF616A" stroke-width="1.5"/>
+  <rect x="45" y="400" width="372" height="32" rx="5" fill="#F5F5F5" stroke="#BF616A" stroke-width="1.5"/>
   <text x="231" y="414" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BF616A" text-anchor="middle" font-weight="bold">Cost: 2 data copies + 2 context switches per read()</text>
   <text x="231" y="428" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#616161" text-anchor="middle">Disk→Kernel (DMA) + Kernel→User (CPU memcpy)</text>
 
@@ -2777,7 +2777,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href=
 
   <!-- ===== TOP LEFT: 4KB pages TLB problem ===== -->
   <rect x="30" y="52" width="405" height="270" rx="8" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5"/>
-  <rect x="30" y="52" width="405" height="34" rx="8" fill="#9E9E9E" stroke="#757575" stroke-width="1.5"/>
+  <rect x="30" y="52" width="405" height="34" rx="8" fill="#9E9E9E" stroke="#9E9E9E" stroke-width="1.5"/>
   <text x="232" y="75" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">Standard 4 KB Pages — 1 GB Region</text>
 
   <!-- TLB box — small, overflowing -->
@@ -2810,7 +2810,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href=
   <text x="255" y="222" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#212121">Result:</text>
   <rect x="250" y="228" width="165" height="40" rx="4" fill="#FFCCBC" stroke="#BF616A" stroke-width="1.5"/>
   <text x="332" y="244" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#BF616A" text-anchor="middle">Constant TLB misses</text>
-  <text x="332" y="260" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BF360C" text-anchor="middle">→ page table walks</text>
+  <text x="332" y="260" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BF616A" text-anchor="middle">→ page table walks</text>
 
   <text x="232" y="298" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BF616A" font-weight="bold" text-anchor="middle">Performance: baseline (1×)</text>
 
@@ -2848,7 +2848,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href=
   <text x="680" y="222" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#212121">Result:</text>
   <rect x="675" y="228" width="165" height="40" rx="4" fill="#F5F5F5" stroke="#4A8A99" stroke-width="1.5"/>
   <text x="757" y="244" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#4A8A99" text-anchor="middle">TLB misses: rare</text>
-  <text x="757" y="260" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#00695C" text-anchor="middle">→ no page walk needed</text>
+  <text x="757" y="260" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#4A8A99" text-anchor="middle">→ no page walk needed</text>
 
   <text x="665" y="298" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#4A8A99" font-weight="bold" text-anchor="middle">Performance: 2–4× faster for memory-intensive workloads</text>
 
@@ -2866,9 +2866,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href=
     <rect x="70" y="412" width="140" height="80" rx="6" fill="#5E81AC" stroke="#0D47A1" stroke-width="2"/>
   </g>
   <text x="140" y="432" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">CPU Socket 0</text>
-  <rect x="78" y="443" width="55" height="22" rx="3" fill="#42A5F5"/>
+  <rect x="78" y="443" width="55" height="22" rx="3" fill="#5E81AC"/>
   <text x="105" y="458" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Core 0–3</text>
-  <rect x="137" y="443" width="65" height="22" rx="3" fill="#42A5F5"/>
+  <rect x="137" y="443" width="65" height="22" rx="3" fill="#5E81AC"/>
   <text x="170" y="458" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Core 4–7</text>
   <text x="140" y="484" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BDBDBD" text-anchor="middle">L3 Cache: 32 MB</text>
 
@@ -2879,7 +2879,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href=
   <text x="307" y="432" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Local Memory 0</text>
   <text x="307" y="452" font-family="Arial,Helvetica,sans-serif" font-size="14" fill="#DDEAF5" text-anchor="middle">128 GB DDR5</text>
   <rect x="238" y="460" width="139" height="22" rx="4" fill="#4A8A99"/>
-  <text x="307" y="475" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#4DB6AC" text-anchor="middle">Latency: ~70 ns ✓</text>
+  <text x="307" y="475" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#4A8A99" text-anchor="middle">Latency: ~70 ns ✓</text>
 
   <!-- Local access arrow -->
   <line x1="210" y1="452" x2="228" y2="452" stroke="#4A8A99" stroke-width="2.5" marker-end="url(#arr-t)"/>
@@ -2891,7 +2891,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href=
   <text x="227" y="540" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#616161" text-anchor="middle">numa_alloc_local() → always use node-local RAM</text>
 
   <!-- QPI / UPI Interconnect in center -->
-  <rect x="415" y="430" width="70" height="60" rx="6" fill="#BF616A" stroke="#BF360C" stroke-width="2" filter="url(#sh)"/>
+  <rect x="415" y="430" width="70" height="60" rx="6" fill="#BF616A" stroke="#BF616A" stroke-width="2" filter="url(#sh)"/>
   <text x="450" y="450" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">QPI /</text>
   <text x="450" y="466" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">UPI</text>
   <text x="450" y="482" font-family="Arial,Helvetica,sans-serif" font-size="11" fill="#DDEAF5" text-anchor="middle">Link</text>
@@ -2912,9 +2912,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href=
     <rect x="510" y="412" width="140" height="80" rx="6" fill="#5E81AC" stroke="#0D47A1" stroke-width="2"/>
   </g>
   <text x="580" y="432" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">CPU Socket 1</text>
-  <rect x="518" y="443" width="55" height="22" rx="3" fill="#42A5F5"/>
+  <rect x="518" y="443" width="55" height="22" rx="3" fill="#5E81AC"/>
   <text x="545" y="458" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Core 8–11</text>
-  <rect x="577" y="443" width="65" height="22" rx="3" fill="#42A5F5"/>
+  <rect x="577" y="443" width="65" height="22" rx="3" fill="#5E81AC"/>
   <text x="610" y="458" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Core 12–15</text>
   <text x="580" y="484" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BDBDBD" text-anchor="middle">L3 Cache: 32 MB</text>
 
@@ -2925,7 +2925,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href=
   <text x="742" y="432" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Local Memory 1</text>
   <text x="742" y="452" font-family="Arial,Helvetica,sans-serif" font-size="14" fill="#DDEAF5" text-anchor="middle">128 GB DDR5</text>
   <rect x="673" y="460" width="139" height="22" rx="4" fill="#4A8A99"/>
-  <text x="742" y="475" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#4DB6AC" text-anchor="middle">Latency: ~70 ns ✓</text>
+  <text x="742" y="475" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#4A8A99" text-anchor="middle">Latency: ~70 ns ✓</text>
 
   <!-- Local access arrow -->
   <line x1="647" y1="452" x2="663" y2="452" stroke="#4A8A99" stroke-width="2.5" marker-end="url(#arr-t)"/>
